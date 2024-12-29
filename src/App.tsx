@@ -106,14 +106,14 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
+          <h1 className="text-3xl font-bold text-indigo-400 text-center mb-8">
             AI Blog Generator
           </h1>
           
-          <div className="bg-white shadow sm:rounded-lg">
+          <div className="bg-gray-800 shadow-xl shadow-indigo-500/10 sm:rounded-lg border border-gray-700">
             <div className="px-4 py-5 sm:p-6">
               <BlogForm 
                 onSubmit={handleSubmit} 
@@ -124,11 +124,11 @@ function App() {
           </div>
 
           {error && (
-            <div className="mt-8 rounded-md bg-red-50 p-4">
+            <div className="mt-8 rounded-md bg-red-900/50 border border-red-700 p-4">
               <div className="flex">
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Error</h3>
-                  <div className="mt-2 text-sm text-red-700">
+                  <h3 className="text-sm font-medium text-red-400">Error</h3>
+                  <div className="mt-2 text-sm text-red-300">
                     <p>{error}</p>
                   </div>
                 </div>
@@ -137,14 +137,16 @@ function App() {
           )}
 
           {generatedContent && !error && (
-            <BlogContent 
-              content={editedContent || generatedContent}
-              onGenerateMore={handleGenerateMore}
-              isLoading={isLoading}
-              onContentChange={handleContentChange}
-              onRegenerateSection={handleRegenerateSection}
-              onEditorReady={setEditorInstance}
-            />
+            <div className="mt-8">
+              <BlogContent 
+                content={editedContent || generatedContent}
+                onGenerateMore={handleGenerateMore}
+                isLoading={isLoading}
+                onContentChange={handleContentChange}
+                onRegenerateSection={handleRegenerateSection}
+                onEditorReady={setEditorInstance}
+              />
+            </div>
           )}
         </div>
       </div>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Settings, X } from 'lucide-react';
+import React, { useState, KeyboardEvent } from 'react';
+import { Settings, Plus, X } from 'lucide-react';
 
 interface BlogFormProps {
   onSubmit: (data: BlogFormData) => void;
@@ -15,6 +15,68 @@ export interface BlogFormData {
   apiProvider: "openai" | "claude";
   customPrompt: string;
   themeName: string;
+}
+
+// Create a reusable TagInput component
+interface TagInputProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  onAdd: () => void;
+  placeholder?: string;
+  tags: string[];
+  onRemove: (index: number) => void;
+}
+
+function TagInput({ label, value, onChange, onAdd, placeholder, tags, onRemove }: TagInputProps) {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onAdd();
+    }
+  };
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-indigo-300">
+        {label}
+      </label>
+      <div className="mt-1 flex space-x-2">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          placeholder={placeholder || `Add ${label.toLowerCase()} and press Enter`}
+        />
+        <button
+          type="button"
+          onClick={onAdd}
+          className="inline-flex items-center justify-center w-9 h-9 rounded-md border border-transparent shadow-sm bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-800 disabled:opacity-50"
+        >
+          <Plus className="h-5 w-5 text-white" />
+        </button>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {tags.map((tag, index) => (
+          <span
+            key={index}
+            className="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-indigo-900/50 text-indigo-300 border border-indigo-700"
+          >
+            {tag}
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              className="ml-1.5 inline-flex items-center justify-center text-indigo-400 hover:text-indigo-300"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
@@ -81,139 +143,73 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
     <>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Blog Title</label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">SEO Keywords</label>
-          <div className="mt-1 flex rounded-md shadow-sm">
+          <label htmlFor="title" className="block text-sm font-medium text-indigo-300">
+            Blog Title
+          </label>
+          <div className="mt-1">
             <input
               type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              className="flex-1 rounded-none rounded-l-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              name="title"
+              id="title"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             />
-            <button
-              type="button"
-              onClick={addKeyword}
-              className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm"
-            >
-              Add
-            </button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {formData.seoKeywords.map((kw, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800"
-              >
-                {kw}
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    seoKeywords: prev.seoKeywords.filter((_, i) => i !== index)
-                  }))}
-                  className="ml-2 inline-flex items-center"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </span>
-            ))}
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Generate Sections</label>
-          <div className="mt-1 flex rounded-md shadow-sm">
-            <input
-              type="text"
-              value={section}
-              onChange={(e) => setSection(e.target.value)}
-              className="flex-1 rounded-none rounded-l-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-            <button
-              type="button"
-              onClick={addSection}
-              className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm"
-            >
-              Add
-            </button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {formData.generateSections.map((sec, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800"
-              >
-                {sec}
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    generateSections: prev.generateSections.filter((_, i) => i !== index)
-                  }))}
-                  className="ml-2 inline-flex items-center"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
+        <TagInput
+          label="SEO Keywords"
+          value={keyword}
+          onChange={setKeyword}
+          onAdd={addKeyword}
+          tags={formData.seoKeywords}
+          onRemove={(index) => 
+            setFormData(prev => ({
+              ...prev,
+              seoKeywords: prev.seoKeywords.filter((_, i) => i !== index)
+            }))
+          }
+        />
+
+        <TagInput
+          label="Generate Sections"
+          value={section}
+          onChange={setSection}
+          onAdd={addSection}
+          tags={formData.generateSections}
+          onRemove={(index) => 
+            setFormData(prev => ({
+              ...prev,
+              generateSections: prev.generateSections.filter((_, i) => i !== index)
+            }))
+          }
+        />
+
+        <TagInput
+          label="Ignore Sections"
+          value={ignoreSection}
+          onChange={setIgnoreSection}
+          onAdd={addIgnoreSection}
+          tags={formData.ignoreSections}
+          onRemove={(index) => 
+            setFormData(prev => ({
+              ...prev,
+              ignoreSections: prev.ignoreSections.filter((_, i) => i !== index)
+            }))
+          }
+        />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Ignore Sections</label>
-          <div className="mt-1 flex rounded-md shadow-sm">
-            <input
-              type="text"
-              value={ignoreSection}
-              onChange={(e) => setIgnoreSection(e.target.value)}
-              className="flex-1 rounded-none rounded-l-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-            <button
-              type="button"
-              onClick={addIgnoreSection}
-              className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm"
-            >
-              Add
-            </button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {formData.ignoreSections.map((sec, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800"
-              >
-                {sec}
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    ignoreSections: prev.ignoreSections.filter((_, i) => i !== index)
-                  }))}
-                  className="ml-2 inline-flex items-center"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">API Provider</label>
+          <label htmlFor="apiProvider" className="block text-sm font-medium text-indigo-300">
+            AI Provider
+          </label>
           <select
+            id="apiProvider"
+            name="apiProvider"
             value={formData.apiProvider}
             onChange={(e) => setFormData(prev => ({ ...prev, apiProvider: e.target.value as "openai" | "claude" }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
             <option value="openai">OpenAI</option>
             <option value="claude">Claude</option>
@@ -221,28 +217,32 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Custom Prompt (Optional)</label>
-          <textarea
-            value={formData.customPrompt}
-            onChange={(e) => setFormData(prev => ({ ...prev, customPrompt: e.target.value }))}
-            rows={3}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          />
+          <label htmlFor="customPrompt" className="block text-sm font-medium text-indigo-300">
+            Custom Instructions (Optional)
+          </label>
+          <div className="mt-1">
+            <textarea
+              id="customPrompt"
+              name="customPrompt"
+              rows={3}
+              value={formData.customPrompt}
+              onChange={(e) => setFormData(prev => ({ ...prev, customPrompt: e.target.value }))}
+              className="block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            />
+          </div>
         </div>
 
-        <div>
+        <div className="flex justify-end">
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
                 <Settings className="animate-spin -ml-1 mr-2 h-4 w-4" />
                 Generating...
               </>
-            ) : hasContent ? (
-              'Regenerate Blog'
             ) : (
               'Generate Blog'
             )}
@@ -251,20 +251,20 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
       </form>
 
       {showConfirmDialog && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity">
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <div className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <div className="relative transform overflow-hidden rounded-lg bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 border border-gray-700">
                 <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <Settings className="h-6 w-6 text-red-600" />
+                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-900/50 sm:mx-0 sm:h-10 sm:w-10">
+                    <Settings className="h-6 w-6 text-red-400" />
                   </div>
                   <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <h3 className="text-base font-semibold leading-6 text-gray-900">
+                    <h3 className="text-base font-semibold leading-6 text-gray-100">
                       Regenerate Blog Content
                     </h3>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-300">
                         Are you sure you want to regenerate the blog content? This will replace your current content with new generated content.
                       </p>
                     </div>
@@ -281,7 +281,7 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
                   <button
                     type="button"
                     onClick={() => setShowConfirmDialog(false)}
-                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                    className="mt-3 inline-flex w-full justify-center rounded-md bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-200 shadow-sm ring-1 ring-inset ring-gray-600 hover:bg-gray-600 sm:mt-0 sm:w-auto"
                   >
                     Cancel
                   </button>
