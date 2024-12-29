@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BlogForm, BlogFormData } from './components/BlogForm';
 import { generateBlogHTML, generateMoreContent, regenerateSection } from './lib/blog/generator';
 import { BlogContent } from './components/BlogContent';
+import { Editor } from '@tiptap/react';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,6 +10,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<BlogFormData | null>(null);
   const [editedContent, setEditedContent] = useState<string | null>(null);
+  const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
 
   const handleSubmit = async (data: BlogFormData) => {
     try {
@@ -39,7 +41,7 @@ function App() {
   };
 
   const handleGenerateMore = async () => {
-    if (!generatedContent || !formData) return;
+    if (!generatedContent || !formData || !editorInstance) return;
     
     try {
       setIsLoading(true);
@@ -57,12 +59,31 @@ function App() {
           themeName: formData.themeName,
         }
       );
-      
-      const cleanContent = additionalContent.replace(/<div[^>]*>([\s\S]*)<\/div>/i, '$1').trim();
-      
-      const newContent = (editedContent || generatedContent).replace(/<\/div>\s*$/, cleanContent + '</div>');
-      setGeneratedContent(newContent);
-      setEditedContent(newContent);
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = additionalContent;
+      const cleanContent = tempDiv.innerHTML
+        .replace(/<div[^>]*>([\s\S]*)<\/div>/i, '$1')
+        .trim();
+
+      // Move to the end and insert content
+      editorInstance
+        .chain()
+        .focus()
+        // Move to end of document
+        .command(({ commands }) => {
+          commands.setTextSelection(editorInstance.state.doc.content.size);
+          return true;
+        })
+        // Add two line breaks for spacing
+        .insertContent('<br><br>')
+        // Insert the new content
+        .insertContent(cleanContent)
+        .run();
+
+      // Update state to reflect changes
+      setEditedContent(editorInstance.getHTML());
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while generating more content');
     } finally {
@@ -122,6 +143,7 @@ function App() {
               isLoading={isLoading}
               onContentChange={handleContentChange}
               onRegenerateSection={handleRegenerateSection}
+              onEditorReady={setEditorInstance}
             />
           )}
         </div>

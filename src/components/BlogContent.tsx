@@ -19,6 +19,7 @@ interface BlogContentProps {
     succeeding: string;
     additionalPrompt: string;
   }) => Promise<string>;
+  onEditorReady?: (editor: any) => void;
 }
 
 interface RegenerateDialogProps {
@@ -130,7 +131,7 @@ function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
   );
 }
 
-export function BlogContent({ content, onGenerateMore, isLoading, onContentChange, onRegenerateSection }: BlogContentProps) {
+export function BlogContent({ content, onGenerateMore, isLoading, onContentChange, onRegenerateSection, onEditorReady }: BlogContentProps) {
   const [imageDialog, setImageDialog] = useState<{
     isOpen: boolean;
     description: string;
@@ -216,6 +217,9 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
     },
     onUpdate: ({ editor }) => {
       onContentChange?.(editor.getHTML());
+    },
+    onCreate: ({ editor }) => {
+      onEditorReady?.(editor);
     },
   });
 

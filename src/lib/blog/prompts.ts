@@ -57,39 +57,43 @@ export function createContinuationPrompt(params: PromptParams & {
 }): string {
   return `
     ${preparedContext}
-    Continue the following blog post you are writing on ${params.title}. Maintain the same style and format.
-    Continue adding more content to the blog post, do not start over.
-
-    Do not include <!DOCTYPE>, <html>, <head>, or <body> tags.
-    Only return the main content container with the blog content.
-
-    Give special attention to the special instructions section. 
+    Continue the following blog article in clean HTML format compatible with TipTap editor.
+    
+    Use only these HTML elements:
+    - <h1>, <h2>, <h3> for headings
+    - <p> for paragraphs
+    - <ul>, <ol>, <li> for lists
+    - <blockquote> for quotes
+    - <img> for images
+    - <strong>, <em> for text formatting
+    
+    Do not include:
+    - <!DOCTYPE>, <html>, <head>, or <body> tags
+    - Div containers or spans
+    - Custom classes or styles
     
     Context:
     - Title: ${params.title}
     - SEO Keywords: ${params.seoKeywords.join(", ")}
+    - Previous content: ${params.previousContent}
     
-    Previous content:
-    ${params.previousContent}
-    
-    Styling Requirements (MUST USE THESE EXACT CLASSES):
-    - Main heading (h1): class="${params.theme.fonts.heading}"
-    - Subheadings (h2, h3): class="${params.theme.fonts.subheading}"
-    - Paragraphs (p): class="${params.theme.fonts.body}"
-    - Image captions: class="${params.theme.fonts.caption}"
-    - Section spacing: class="${params.theme.layout.sectionSpacing}"
-    - Image container spacing: class="${params.theme.layout.imageSpacing}"
-    
-    Requirements:
-    - Word Count: 1000-2000 additional words
+    Content Structure:
     - Continue naturally from the previous content
-    - Maintain consistent heading structure and style
-    - ALWAYS use the provided theme classes for styling
-    - Use image placeholders when appropriate, wrapped in styled containers
-    ${params.customPrompt ? `Special Instructions:
-    - ${params.customPrompt}` : ""}
+    - Maintain consistent heading hierarchy
+    - Include these sections if not covered: ${params.generateSections.length > 0 ? params.generateSections.join(", ") : "continue with relevant sections"}
+    - Skip these sections: ${params.ignoreSections.join(", ")}
     
-    Return only the HTML content without any markdown or code blocks.
+    Important:
+    - Make the content comprehensive and detailed
+    - Aim for 1000-2000 additional words
+    - Maintain consistent tone and style with previous content
+    - Ensure smooth transition from previous content
+    - Use SEO keywords naturally throughout the text
+    
+    ${params.customPrompt ? `Special Instructions: ${params.customPrompt}` : ""}
+    
+    Return only the clean HTML content without any markdown or code blocks.
+    Do not repeat content that was already covered.
   `;
 }
 
