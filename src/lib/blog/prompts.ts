@@ -17,46 +17,38 @@ const preparedContext = `Learn about website ${websiteName} url: ${url} ${webapp
 export function createInitialPrompt(params: PromptParams): string {
   return `
     ${preparedContext}
-    You are a professional blog writer. Generate the HTML content for a blog article section.
-    Do not include <!DOCTYPE>, <html>, <head>, or <body> tags.
-    Only return the main content container with the blog content.
-    Give special attention to the special instructions section. 
+    Generate a blog article in clean HTML format compatible with TipTap editor.
+    
+    Use only these HTML elements:
+    - <h1>, <h2>, <h3> for headings
+    - <p> for paragraphs
+    - <ul>, <ol>, <li> for lists
+    - <blockquote> for quotes
+    - <img> for images
+    - <strong>, <em> for text formatting
+    
+    Do not include:
+    - <!DOCTYPE>, <html>, <head>, or <body> tags
+    - Div containers or spans
+    - Custom classes or styles
     
     Requirements:
     - Title: ${params.title}
-    - SEO Keywords: ${params.seoKeywords.length > 0 ? params.seoKeywords.join(", ") : "None"}
+    - SEO Keywords: ${params.seoKeywords.join(", ")}
     - Word Count: 2000-4000 words
     
     Content Structure:
-    - Create SEO-optimized headings using h1, h2, h3 tags
+    - Create SEO-optimized headings
     - Include these sections: ${params.generateSections.length > 0 ? params.generateSections.join(", ") : "Introduction, Main Content"}
     - Skip these sections: ${params.ignoreSections.join(", ")}
-    - Add data-section attributes to identify each section
-    
-    Styling Requirements (MUST USE THESE EXACT CLASSES):
-    - Main heading (h1): class="${params.theme.fonts.heading}"
-    - Subheadings (h2, h3): class="${params.theme.fonts.subheading}"
-    - Paragraphs (p): class="${params.theme.fonts.body}"
-    - Image captions: class="${params.theme.fonts.caption}"
-    - Section spacing: class="${params.theme.layout.sectionSpacing}"
-    - Image container spacing: class="${params.theme.layout.imageSpacing}"
-    
-    Image Placeholders:
-    - For suggesting image locations, use:
-      <div class="${params.theme.layout.imageSpacing}">
-        <img src="null" alt="[descriptive alt text]" bloggy-description="[detailed description of what image should show]" />
-        <p class="${params.theme.fonts.caption}">[image caption]</p>
-      </div>
     
     Important:
     - Make the content comprehensive and detailed
     - Aim for the higher end of the word count range
-    - Ensure natural paragraph breaks
-    - ALWAYS use the provided theme classes for styling
     
-    ${params.customPrompt ? `- Special Instructions: ${params.customPrompt}` : ""}
+    ${params.customPrompt ? `Special Instructions: ${params.customPrompt}` : ""}
     
-    Return only the HTML content without any markdown or code blocks.
+    Return only the clean HTML content.
   `;
 }
 

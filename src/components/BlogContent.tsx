@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { Settings } from 'lucide-react';
 import { ImageDialog } from './ImageDialog';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import Placeholder from '@tiptap/extension-placeholder';
+import Typography from '@tiptap/extension-typography';
+import { getTheme } from '../lib/themes';
 
 interface BlogContentProps {
   content: string;
   onGenerateMore: () => void;
   isLoading: boolean;
+  onContentChange?: (html: string) => void;
 }
 
-export function BlogContent({ content, onGenerateMore, isLoading }: BlogContentProps) {
+export function BlogContent({ content, onGenerateMore, isLoading, onContentChange }: BlogContentProps) {
   const [imageDialog, setImageDialog] = useState<{
     isOpen: boolean;
     description: string;
@@ -17,6 +24,54 @@ export function BlogContent({ content, onGenerateMore, isLoading }: BlogContentP
     isOpen: false,
     description: '',
     element: null
+  });
+
+  const theme = getTheme(); // Get current theme
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+          HTMLAttributes: {
+            class: ({ level }) => {
+              switch (level) {
+                case 1:
+                  return theme.fonts.heading;
+                case 2:
+                case 3:
+                  return theme.fonts.subheading;
+                default:
+                  return '';
+              }
+            }
+          }
+        },
+        paragraph: {
+          HTMLAttributes: {
+            class: theme.fonts.body
+          }
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: theme.layout.imageSpacing
+        }
+      }),
+      Typography,
+      Placeholder.configure({
+        placeholder: 'Start editing the generated content...'
+      })
+    ],
+    content,
+    editorProps: {
+      attributes: {
+        class: 'prose prose-lg max-w-none focus:outline-none'
+      }
+    },
+    onUpdate: ({ editor }) => {
+      onContentChange?.(editor.getHTML());
+    }
   });
 
   const handleImageClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -35,9 +90,13 @@ export function BlogContent({ content, onGenerateMore, isLoading }: BlogContentP
     if (imageDialog.element) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (imageDialog.element && e.target?.result) {
-          imageDialog.element.src = e.target.result as string;
-          imageDialog.element.removeAttribute('bloggy-description');
+        if (e.target?.result && editor) {
+          editor.chain().focus()
+            .setImage({ 
+              src: e.target.result as string,
+              alt: imageDialog.description 
+            })
+            .run();
         }
       };
       reader.readAsDataURL(file);
@@ -50,11 +109,9 @@ export function BlogContent({ content, onGenerateMore, isLoading }: BlogContentP
       <div className="bg-white shadow sm:rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Generated Blog Content</h2>
-          <div 
-            className="prose max-w-none"
-            onClick={handleImageClick}
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
+          <div onClick={handleImageClick}>
+            <EditorContent editor={editor} />
+          </div>
           <div className="mt-6">
             <button
               onClick={onGenerateMore}

@@ -8,6 +8,7 @@ function App() {
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<BlogFormData | null>(null);
+  const [editedContent, setEditedContent] = useState<string | null>(null);
 
   const handleSubmit = async (data: BlogFormData) => {
     try {
@@ -33,6 +34,10 @@ function App() {
     }
   };
 
+  const handleContentChange = (newContent: string) => {
+    setEditedContent(newContent);
+  };
+
   const handleGenerateMore = async () => {
     if (!generatedContent || !formData) return;
     
@@ -41,7 +46,7 @@ function App() {
       setError(null);
       
       const additionalContent = await generateMoreContent(
-        generatedContent,
+        editedContent || generatedContent,
         {
           title: formData.title,
           seoKeywords: formData.seoKeywords,
@@ -55,7 +60,9 @@ function App() {
       
       const cleanContent = additionalContent.replace(/<div[^>]*>([\s\S]*)<\/div>/i, '$1').trim();
       
-      setGeneratedContent(prev => prev?.replace(/<\/div>\s*$/, cleanContent + '</div>'));
+      const newContent = (editedContent || generatedContent).replace(/<\/div>\s*$/, cleanContent + '</div>');
+      setGeneratedContent(newContent);
+      setEditedContent(newContent);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while generating more content');
     } finally {
@@ -96,9 +103,10 @@ function App() {
 
           {generatedContent && !error && (
             <BlogContent 
-              content={generatedContent}
+              content={editedContent || generatedContent}
               onGenerateMore={handleGenerateMore}
               isLoading={isLoading}
+              onContentChange={handleContentChange}
             />
           )}
         </div>
