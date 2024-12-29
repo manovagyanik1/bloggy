@@ -8,9 +8,15 @@ interface PromptParams {
   customPrompt?: string;
   theme: BlogTheme;
 }
+const websiteName = "Clipy";
+const url = "https://clipy.online/";
+const webappContext = `Clipy is a cloud-powered screen recording platform that simplifies professional screen recording, cloud storage, and instant sharing. 
+ It offers powerful features for seamless screen recording, allowing users to capture their screens effortlessly. The platform integrates cloud storage, enabling users to save their recordings securely and access them from anywhere. Additionally, Clipy provides instant sharing capabilities, making it easy to share recordings with others quickly. This combination of features makes Clipy a valuable tool for professionals seeking an efficient and user-friendly screen recording solution.`
+const preparedContext = `Learn about website ${websiteName} url: ${url} ${webappContext}`
 
 export function createInitialPrompt(params: PromptParams): string {
   return `
+    ${preparedContext}
     You are a professional blog writer. Generate the HTML content for a blog article section.
     Do not include <!DOCTYPE>, <html>, <head>, or <body> tags.
     Only return the main content container with the blog content.
@@ -58,6 +64,7 @@ export function createContinuationPrompt(params: PromptParams & {
   previousContent: string;
 }): string {
   return `
+    ${preparedContext}
     Continue the following blog post you are writing on ${params.title}. Maintain the same style and format.
     Continue adding more content to the blog post, do not start over.
 

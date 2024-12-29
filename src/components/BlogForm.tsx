@@ -19,7 +19,7 @@ export interface BlogFormData {
 
 export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
   const [formData, setFormData] = useState<BlogFormData>({
-    title: "10 best websites to hire remote developers",
+    title: "What makes clipy so powerful",
     seoKeywords: [],
     ignoreSections: [],
     generateSections: [],

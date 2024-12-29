@@ -53,7 +53,9 @@ function App() {
         }
       );
       
-      setGeneratedContent(prev => prev?.replace(/<\/div>\s*$/, additionalContent + '</div>'));
+      const cleanContent = additionalContent.replace(/<div[^>]*>([\s\S]*)<\/div>/i, '$1').trim();
+      
+      setGeneratedContent(prev => prev?.replace(/<\/div>\s*$/, cleanContent + '</div>'));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while generating more content');
     } finally {
