@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BlogForm, BlogFormData } from './components/BlogForm';
-import { generateBlogHTML, generateMoreContent } from './lib/blog/generator';
+import { generateBlogHTML, generateMoreContent, regenerateSection } from './lib/blog/generator';
 import { BlogContent } from './components/BlogContent';
 
 function App() {
@@ -70,6 +70,20 @@ function App() {
     }
   };
 
+  const handleRegenerateSection = async (context: {
+    preceding: string;
+    selected: string;
+    succeeding: string;
+    additionalPrompt: string;
+  }) => {
+    if (!formData) return '';
+    
+    return regenerateSection({
+      ...context,
+      apiProvider: formData.apiProvider
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -107,6 +121,7 @@ function App() {
               onGenerateMore={handleGenerateMore}
               isLoading={isLoading}
               onContentChange={handleContentChange}
+              onRegenerateSection={handleRegenerateSection}
             />
           )}
         </div>

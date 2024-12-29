@@ -92,3 +92,32 @@ export function createContinuationPrompt(params: PromptParams & {
     Return only the HTML content without any markdown or code blocks.
   `;
 }
+
+interface RegenerationPromptParams {
+  preceding: string;
+  selected: string;
+  succeeding: string;
+  additionalPrompt: string;
+}
+
+export function createRegenerationPrompt(params: RegenerationPromptParams): string {
+  return `
+    ${preparedContext}
+    I have a blog post section that needs to be rewritten.
+    
+    Context before the section:
+    ${params.preceding}
+    
+    Section to rewrite:
+    ${params.selected}
+    
+    Context after the section:
+    ${params.succeeding}
+    
+    Additional instructions:
+    ${params.additionalPrompt}
+    
+    Please rewrite the section while maintaining consistency with the surrounding context.
+    Return only the rewritten section, without any additional formatting or explanations.
+  `;
+}

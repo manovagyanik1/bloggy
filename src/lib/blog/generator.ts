@@ -2,7 +2,7 @@ import { BlogTheme } from '../types/theme';
 import { getTheme } from '../themes';
 import { callOpenAI } from '../api/openai';
 import { callClaude } from '../api/claude';
-import { createInitialPrompt, createContinuationPrompt } from './prompts';
+import { createInitialPrompt, createContinuationPrompt, createRegenerationPrompt } from './prompts';
 
 export interface GenerateBlogParams {
   title: string;
@@ -52,4 +52,21 @@ export function wrapContent(content: string, theme: BlogTheme): string {
       ${cleanContent}
     </div>
   `;
+}
+
+interface RegenerateSectionParams extends Pick<GenerateBlogParams, 'apiProvider'> {
+  preceding: string;
+  selected: string;
+  succeeding: string;
+  additionalPrompt: string;
+}
+
+export async function regenerateSection(params: RegenerateSectionParams): Promise<string> {
+  const prompt = createRegenerationPrompt(params);
+  
+  const content = await (params.apiProvider === "openai" 
+    ? callOpenAI(prompt) 
+    : callClaude(prompt));
+    
+  return content;
 }
