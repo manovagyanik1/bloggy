@@ -71,7 +71,11 @@ function App() {
           
           <div className="bg-white shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:p-6">
-              <BlogForm onSubmit={handleSubmit} isLoading={isLoading} />
+              <BlogForm 
+                onSubmit={handleSubmit} 
+                isLoading={isLoading} 
+                hasContent={!!generatedContent}
+              />
             </div>
           </div>
 
