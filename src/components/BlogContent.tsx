@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Settings, RefreshCw } from 'lucide-react';
 import { ImageDialog } from './ImageDialog';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -359,25 +359,68 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
 
   return (
     <div className="mt-8">
-      <div 
-        className="shadow-xl rounded-lg relative border border-gray-700" 
-        style={{ backgroundColor: theme.colors.background }}
-      >
+      <div className="shadow-xl rounded-lg relative border border-gray-700" 
+           style={{ backgroundColor: theme.colors.background }}>
         <div className="px-4 py-5 sm:p-6">
-          <h2 className={`text-lg font-medium mb-4 ${theme.fonts.heading}`} style={{ color: theme.colors.text }}>
+          <h2 className={`text-lg font-medium mb-4 ${theme.fonts.heading}`} 
+              style={{ color: theme.colors.text }}>
             Generated Blog Content
           </h2>
           <div className="relative">
-            <div 
-              onClick={handleImageClick}
-              className="relative"
-              style={{ backgroundColor: theme.colors.background }}
-            >
+            <div onClick={handleImageClick} className="relative"
+                 style={{ backgroundColor: theme.colors.background }}>
+              {editor && (
+                <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+                  <div className="flex gap-1 p-1 rounded-lg shadow-lg border border-gray-700"
+                       style={{ backgroundColor: theme.colors.background }}>
+                    <button
+                      onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                      className={`p-1 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
+                      style={{ color: theme.colors.text }}
+                    >
+                      H1
+                    </button>
+                    <button
+                      onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                      className={`p-1 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
+                      style={{ color: theme.colors.text }}
+                    >
+                      H2
+                    </button>
+                    <button
+                      onClick={() => editor.chain().focus().toggleBold().run()}
+                      className={`p-1 rounded ${editor.isActive('bold') ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
+                      style={{ color: theme.colors.text }}
+                    >
+                      B
+                    </button>
+                    <button
+                      onClick={() => editor.chain().focus().toggleItalic().run()}
+                      className={`p-1 rounded ${editor.isActive('italic') ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
+                      style={{ color: theme.colors.text }}
+                    >
+                      I
+                    </button>
+                    <button
+                      onClick={() => editor.chain().focus().toggleBulletList().run()}
+                      className={`p-1 rounded ${editor.isActive('bulletList') ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
+                      style={{ color: theme.colors.text }}
+                    >
+                      •
+                    </button>
+                    <button
+                      onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                      className={`p-1 rounded ${editor.isActive('orderedList') ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
+                      style={{ color: theme.colors.text }}
+                    >
+                      1.
+                    </button>
+                  </div>
+                </BubbleMenu>
+              )}
               <EditorContent editor={editor} />
               <FloatingButton
-                onRegenerate={() => {
-                  setRegenerateDialog(prev => ({ ...prev, isOpen: true }));
-                }}
+                onRegenerate={() => setRegenerateDialog(prev => ({ ...prev, isOpen: true }))}
                 position={buttonPosition}
               />
             </div>
