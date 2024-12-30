@@ -1,7 +1,7 @@
 import { BlogTheme } from '../types/theme';
 
 export const modernTheme: BlogTheme = {
-  name: "modern",
+  name: "clipy",
   colors: {
     primary: "#2563eb",
     secondary: "#3b82f6",
