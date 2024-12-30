@@ -58,9 +58,12 @@ export function wrapContent(content: string, theme: BlogTheme): string {
   // Remove outer div if present
   const cleanContent = content.replace(/<html[^>]*>([\s\S]*)<\/html>/i, '$1').trim();
   
+  // content comes as ```html\n and \n``` so we need to remove them
+  const htmlContent = cleanContent.replace(/```html\n|\n```/g, '');
+  
   return `
     <div class="${theme.layout.container}" style="background-color: ${theme.colors.background}; color: ${theme.colors.text}">
-      ${cleanContent}
+      ${htmlContent}
     </div>
   `;
 }
