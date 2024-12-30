@@ -20,5 +20,3 @@ export const clipyTheme: BlogTheme = {
     imageSpacing: 'my-6',
   },
 };
-
-export type Theme = typeof clipyTheme; 

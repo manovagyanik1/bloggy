@@ -9,6 +9,6 @@ export const themes: Record<string, BlogTheme> = {
   clipy: clipyTheme,
 };
 
-export function getTheme(name: string = 'default'): BlogTheme {
-  return themes[name] || defaultTheme;
+export function getTheme(name: string = 'clipy'): BlogTheme {
+  return themes[name] || clipyTheme;
 }

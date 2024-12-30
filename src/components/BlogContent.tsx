@@ -32,31 +32,36 @@ interface RegenerateDialogProps {
 
 function RegenerateDialog({ isOpen, onClose, onRegenerate, selectedText, isRegenerating }: RegenerateDialogProps) {
   const [additionalPrompt, setAdditionalPrompt] = useState('');
+  const theme = getTheme();
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
+    <div className="fixed inset-0 bg-gray-900/75 transition-opacity">
       <div className="fixed inset-0 z-10 overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+          <div 
+            className="relative transform overflow-hidden rounded-lg px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 border border-gray-700"
+            style={{ backgroundColor: theme.colors.background }}
+          >
             <div className="sm:flex sm:items-start">
               <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                <h3 className="text-base font-semibold leading-6 text-gray-900">
+                <h3 className="text-base font-semibold leading-6" style={{ color: theme.colors.text }}>
                   Regenerate Content
                 </h3>
                 <div className="mt-2">
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm mb-4" style={{ color: theme.colors.secondary }}>
                     Selected text to regenerate:
                   </p>
-                  <div className="bg-gray-50 p-3 rounded-md mb-4">
-                    <p className="text-sm text-gray-700">{selectedText}</p>
+                  <div className="bg-gray-800 p-3 rounded-md mb-4">
+                    <p className="text-sm" style={{ color: theme.colors.text }}>{selectedText}</p>
                   </div>
                   <textarea
                     value={additionalPrompt}
                     onChange={(e) => setAdditionalPrompt(e.target.value)}
                     placeholder="Add any specific instructions for regeneration (optional)"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
                     rows={3}
                   />
                 </div>
@@ -102,8 +107,8 @@ interface FloatingButtonProps {
 }
 
 function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
-  console.log('FloatingButton render:', { position });
-
+  const theme = getTheme();
+  
   if (!position) return null;
 
   return (
@@ -117,12 +122,15 @@ function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
     >
       <button
         onClick={(e) => {
-          console.log('Regenerate button clicked');
           e.preventDefault();
           e.stopPropagation();
           onRegenerate();
         }}
-        className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
+        style={{ 
+          backgroundColor: theme.colors.primary,
+          color: theme.colors.background 
+        }}
       >
         <RefreshCw className="h-4 w-4 mr-1" />
         Regenerate
@@ -160,7 +168,7 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
     error: null,
   });
 
-  const theme = getTheme(); // Get current theme
+  const theme = getTheme();
 
   const editor = useEditor({
     extensions: [
@@ -178,12 +186,14 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
                 default:
                   return '';
               }
-            }
+            },
+            style: `color: ${theme.colors.text};`
           }
         },
         paragraph: {
           HTMLAttributes: {
-            class: theme.fonts.body
+            class: theme.fonts.body,
+            style: `color: ${theme.colors.text};`
           }
         },
       }),
@@ -194,25 +204,20 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
       }),
       Typography,
       Placeholder.configure({
-        placeholder: 'Start editing the generated content...'
+        placeholder: 'Start editing the generated content...',
+        emptyEditorClass: 'text-gray-400',
       })
     ],
     content,
     editorProps: {
       attributes: {
-        class: 'prose prose-lg max-w-none focus:outline-none relative'
-      },
-      handleDOMEvents: {
-        focus: () => {
-          console.log('Editor focused, clearing button position');
-          setButtonPosition(null);
-          return false;
-        },
-        mouseup: () => {
-          console.log('Mouse up in editor, checking selection');
-          handleSelection();
-          return false;
-        }
+        class: `prose prose-lg max-w-none focus:outline-none`,
+        style: `
+          background-color: ${theme.colors.background};
+          --tw-prose-body: ${theme.colors.text};
+          --tw-prose-headings: ${theme.colors.text};
+          color: ${theme.colors.text};
+        `
       }
     },
     onUpdate: ({ editor }) => {
@@ -255,16 +260,10 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
 
   const handleSelection = useCallback(() => {
     if (!editor) {
-      console.log('Selection handler: Editor not initialized');
       return;
     }
 
     const selection = window.getSelection();
-    console.log('Selection changed:', {
-      hasSelection: !!selection,
-      isCollapsed: selection?.isCollapsed,
-      text: selection?.toString()
-    });
 
     if (!selection || selection.isCollapsed) {
       setButtonPosition(null);
@@ -281,14 +280,6 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
 
       const x = selectionRect.right - editorRect.left;
       const y = selectionRect.top - editorRect.top;
-
-      console.log('Setting button position:', {
-        x,
-        y,
-        selectionRect,
-        editorRect,
-        selectedText
-      });
 
       setButtonPosition({
         x: x + 10,
@@ -322,15 +313,11 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
           additionalPrompt
         };
 
-        console.log('Regeneration context:', context);
         const newContent = await onRegenerateSection(context);
-        console.log('New content received:', newContent);
 
         // Store current selection state
         const from = editor.state.selection.from;
         const to = editor.state.selection.to;
-
-        console.log('Selection range:', { from, to });
 
         // Replace content at the current selection
         editor
@@ -344,7 +331,6 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
         setButtonPosition(null);
         setRegenerateDialog(prev => ({ ...prev, isOpen: false }));
       } catch (error) {
-        console.error('Error regenerating content:', error);
         setRegenerationState({ 
           isLoading: false, 
           error: error instanceof Error ? error.message : 'Failed to regenerate content'
@@ -364,7 +350,6 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
 
   useEffect(() => {
     const handleMouseUp = () => {
-      console.log('Global mouseup event');
       handleSelection();
     };
 
@@ -374,18 +359,23 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
 
   return (
     <div className="mt-8">
-      <div className="bg-white shadow sm:rounded-lg relative">
+      <div 
+        className="shadow-xl rounded-lg relative border border-gray-700" 
+        style={{ backgroundColor: theme.colors.background }}
+      >
         <div className="px-4 py-5 sm:p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Generated Blog Content</h2>
+          <h2 className={`text-lg font-medium mb-4 ${theme.fonts.heading}`} style={{ color: theme.colors.text }}>
+            Generated Blog Content
+          </h2>
           <div className="relative">
             <div 
               onClick={handleImageClick}
               className="relative"
+              style={{ backgroundColor: theme.colors.background }}
             >
               <EditorContent editor={editor} />
               <FloatingButton
                 onRegenerate={() => {
-                  console.log('FloatingButton: triggering regenerate dialog');
                   setRegenerateDialog(prev => ({ ...prev, isOpen: true }));
                 }}
                 position={buttonPosition}
@@ -396,7 +386,11 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
             <button
               onClick={onGenerateMore}
               disabled={isLoading}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50"
+              style={{ 
+                backgroundColor: theme.colors.primary,
+                color: theme.colors.background 
+              }}
             >
               {isLoading ? (
                 <>
@@ -411,8 +405,8 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
         </div>
 
         {regenerationState.error && (
-          <div className="absolute top-0 right-0 m-4 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{regenerationState.error}</p>
+          <div className="absolute top-0 right-0 m-4 p-4 bg-red-900/50 border border-red-700 rounded-md">
+            <p className="text-sm text-red-300">{regenerationState.error}</p>
           </div>
         )}
 
