@@ -7,7 +7,7 @@ import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
 import { getTheme } from '../lib/themes';
-import { SEOMetadataForm } from './SEOMetadataForm';
+import { SEOMetadata, SEOMetadataForm } from './SEOMetadataForm';
 
 interface BlogContentProps {
   content: string;
@@ -185,108 +185,20 @@ export function BlogContent({
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3],
-          HTMLAttributes: {
-            class: ({ level }) => {
-              switch (level) {
-                case 1:
-                  return theme.fonts.heading;
-                case 2:
-                case 3:
-                  return theme.fonts.subheading;
-                default:
-                  return '';
-              }
-            },
-            style: `color: ${theme.colors.text};`
-          }
-        },
-        paragraph: {
-          HTMLAttributes: {
-            class: theme.fonts.body,
-            style: `color: ${theme.colors.text};`
-          }
-        },
-        bold: {
-          HTMLAttributes: {
-            style: `color: ${theme.colors.text};`
-          }
-        },
-        italic: {
-          HTMLAttributes: {
-            style: `color: ${theme.colors.text};`
-          }
-        },
-        bulletList: {
-          HTMLAttributes: {
-            style: `color: ${theme.colors.text};`
-          }
-        },
-        orderedList: {
-          HTMLAttributes: {
-            style: `color: ${theme.colors.text};`
-          }
-        },
-        listItem: {
-          HTMLAttributes: {
-            style: `color: ${theme.colors.text};`
-          }
-        },
-        blockquote: {
-          HTMLAttributes: {
-            style: `color: ${theme.colors.text}; border-left-color: ${theme.colors.primary};`
-          }
-        },
-        code: {
-          HTMLAttributes: {
-            style: `color: ${theme.colors.text}; background-color: ${theme.colors.background};`
-          }
-        }
-      }),
-      Image.configure({
-        HTMLAttributes: {
-          class: theme.layout.imageSpacing
-        }
-      }),
+      StarterKit,
+      Image,
       Typography,
       Placeholder.configure({
-        placeholder: 'Start editing the generated content...',
-        emptyEditorClass: 'text-gray-400',
+        placeholder: 'Start editing...',
       })
     ],
-    content,
-    editorProps: {
-      attributes: {
-        class: `prose prose-lg max-w-none focus:outline-none`,
-        style: `
-          background-color: ${theme.colors.background};
-          --tw-prose-body: ${theme.colors.text};
-          --tw-prose-headings: ${theme.colors.text};
-          --tw-prose-bold: ${theme.colors.text};
-          --tw-prose-italic: ${theme.colors.text};
-          --tw-prose-quotes: ${theme.colors.text};
-          --tw-prose-quote-borders: ${theme.colors.primary};
-          --tw-prose-code: ${theme.colors.text};
-          --tw-prose-pre-code: ${theme.colors.text};
-          --tw-prose-pre-bg: ${theme.colors.background};
-          --tw-prose-th: ${theme.colors.text};
-          --tw-prose-td: ${theme.colors.text};
-          --tw-prose-invert: ${theme.colors.text};
-          
-          /* Ensure all text elements inherit the correct color */
-          * { color: ${theme.colors.text}; }
-          strong, em, code, pre, blockquote, li { color: ${theme.colors.text}; }
-        `
-      }
-    },
+    content: content || '<p></p>',
     onUpdate: ({ editor }) => {
       onContentChange?.(editor.getHTML());
     },
     onCreate: ({ editor }) => {
       onEditorReady?.(editor);
-    },
+    }
   });
 
   const handleImageClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -428,7 +340,8 @@ export function BlogContent({
             Generated Blog Content
           </h2>
           <div className="relative">
-            <div onClick={handleImageClick} className="relative"
+            <div onClick={handleImageClick} 
+                 className="prose prose-invert max-w-none"
                  style={{ backgroundColor: theme.colors.background }}>
               {editor && (
                 <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
