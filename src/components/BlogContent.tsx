@@ -7,6 +7,7 @@ import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
 import { getTheme } from '../lib/themes';
+import { SEOMetadataForm } from './SEOMetadataForm';
 
 interface BlogContentProps {
   content: string;
@@ -20,6 +21,8 @@ interface BlogContentProps {
     additionalPrompt: string;
   }) => Promise<string>;
   onEditorReady?: (editor: any) => void;
+  onFinalize?: () => Promise<void>;
+  isGeneratingSEO?: boolean;
 }
 
 interface RegenerateDialogProps {
@@ -139,7 +142,15 @@ function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
   );
 }
 
-export function BlogContent({ content, onGenerateMore, isLoading, onContentChange, onRegenerateSection, onEditorReady }: BlogContentProps) {
+export function BlogContent({ 
+  content, 
+  onGenerateMore, 
+  isLoading, 
+  onContentChange, 
+  onRegenerateSection, 
+  onEditorReady,
+  onFinalize,
+}: BlogContentProps) {
   const [imageDialog, setImageDialog] = useState<{
     isOpen: boolean;
     description: string;
@@ -167,6 +178,8 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
     isLoading: false,
     error: null,
   });
+
+  const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
 
   const theme = getTheme();
 
@@ -473,15 +486,12 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
               />
             </div>
           </div>
-          <div className="mt-6">
+          <div className="mt-6 flex gap-3">
             <button
               onClick={onGenerateMore}
               disabled={isLoading}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50"
-              style={{ 
-                backgroundColor: theme.colors.primary,
-                color: theme.colors.background 
-              }}
+              style={{ backgroundColor: theme.colors.primary, color: theme.colors.background }}
             >
               {isLoading ? (
                 <>
@@ -490,6 +500,22 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
                 </>
               ) : (
                 'Generate More Content'
+              )}
+            </button>
+
+            <button
+              onClick={onFinalize}
+              disabled={isLoading}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50"
+              style={{ backgroundColor: theme.colors.secondary, color: theme.colors.background }}
+            >
+              {isLoading ? (
+                <>
+                  <Settings className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                  Analyzing...
+                </>
+              ) : (
+                'Finalize & Generate SEO'
               )}
             </button>
           </div>
@@ -516,6 +542,13 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
         description={imageDialog.description}
         onImageUpload={handleImageUpload}
       />
+
+      {seoMetadata && (
+        <SEOMetadataForm
+          metadata={seoMetadata}
+          onChange={setSeoMetadata}
+        />
+      )}
     </div>
   );
 }

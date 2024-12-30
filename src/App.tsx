@@ -3,6 +3,8 @@ import { BlogForm, BlogFormData } from './components/BlogForm';
 import { generateBlogHTML, generateMoreContent, regenerateSection } from './lib/blog/generator';
 import { BlogContent } from './components/BlogContent';
 import { Editor } from '@tiptap/react';
+import { SEOMetadata, SEOMetadataForm } from './components/SEOMetadataForm';
+import { finalizeBlog } from './lib/blog/generator';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,6 +13,7 @@ function App() {
   const [formData, setFormData] = useState<BlogFormData | null>(null);
   const [editedContent, setEditedContent] = useState<string | null>(null);
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
+  const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
 
   const handleSubmit = async (data: BlogFormData) => {
     try {
@@ -105,6 +108,20 @@ function App() {
     });
   };
 
+  const handleFinalize = async () => {
+    if (!editorInstance) return;
+    
+    try {
+      setIsLoading(true);
+      const metadata = await finalizeBlog(editorInstance.getHTML());
+      setSeoMetadata(metadata);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to generate SEO metadata');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -145,7 +162,14 @@ function App() {
                 onContentChange={handleContentChange}
                 onRegenerateSection={handleRegenerateSection}
                 onEditorReady={setEditorInstance}
+                onFinalize={handleFinalize}
               />
+              {seoMetadata && (
+                <SEOMetadataForm
+                  metadata={seoMetadata}
+                  onChange={setSeoMetadata}
+                />
+              )}
             </div>
           )}
         </div>

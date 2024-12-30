@@ -2,7 +2,7 @@ import { BlogTheme } from '../types/theme';
 import { getTheme } from '../themes';
 import { callOpenAI } from '../api/openai';
 import { callClaude } from '../api/claude';
-import { createInitialPrompt, createContinuationPrompt, createRegenerationPrompt } from './prompts';
+import { createInitialPrompt, createContinuationPrompt, createRegenerationPrompt, createFinalizePrompt } from './prompts';
 
 export interface GenerateBlogParams {
   title: string;
@@ -41,6 +41,17 @@ export async function generateMoreContent(
     : callClaude(prompt));
     
   return content;
+}
+
+export async function finalizeBlog(
+  content: string,
+): Promise<string> {
+  const prompt = createFinalizePrompt(content);
+  
+  const metadata = await callOpenAI(prompt);
+  // the response has ``` json\n and \n``` so we need to remove them
+  const json = metadata.replace(/```json\n|\n```/g, '');
+  return JSON.parse(json);
 }
 
 export function wrapContent(content: string, theme: BlogTheme): string {

@@ -125,3 +125,42 @@ export function createRegenerationPrompt(params: RegenerationPromptParams): stri
     Return only the rewritten section, without any additional formatting or explanations.
   `;
 }
+
+export function createFinalizePrompt(content: string) {
+  return `
+    Analyze the following blog content and generate SEO-optimized metadata:
+    ---
+    ${content}
+    ---
+    
+    Generate the following in a structured format:
+    1. SEO Title (60 chars max, compelling and keyword-rich)
+    2. Meta Description (150-160 chars, engaging summary with call-to-action)
+    3. URL Slug (short, keyword-focused, hyphenated)
+    4. Primary Keyword
+    5. Secondary Keywords (3-5)
+    6. Social Media Title (different from SEO title, more engaging)
+    7. Social Media Description (compelling, shareable)
+    8. Estimated Reading Time
+    9. Article Topic Category
+    10. Canonical URL (if needed)
+    
+    Make it SEO-optimized and reader-friendly.
+    
+    Return the response in valid JSON format with these exact keys:
+    {
+      "seoTitle": "",
+      "metaDescription": "",
+      "slug": "",
+      "primaryKeyword": "",
+      "secondaryKeywords": [],
+      "socialTitle": "",
+      "socialDescription": "",
+      "readingTime": "",
+      "category": "",
+      "canonicalUrl": ""
+    }
+    ---
+    Return only the JSON, no other text or formatting.
+  `;
+}
