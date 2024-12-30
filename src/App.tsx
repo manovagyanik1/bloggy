@@ -5,6 +5,8 @@ import { BlogContent } from './components/BlogContent';
 import { Editor } from '@tiptap/react';
 import { SEOMetadata, SEOMetadataForm } from './components/SEOMetadataForm';
 import { finalizeBlog } from './lib/blog/generator';
+import { saveBlogPost } from './lib/supabase';
+import { Settings } from 'lucide-react';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,6 +16,8 @@ function App() {
   const [editedContent, setEditedContent] = useState<string | null>(null);
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
   const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [deployError, setDeployError] = useState<string | null>(null);
 
   const handleSubmit = async (data: BlogFormData) => {
     try {
@@ -122,6 +126,27 @@ function App() {
     }
   };
 
+  const handleDeploy = async () => {
+    if (!editorInstance || !seoMetadata) return;
+    
+    try {
+      setIsDeploying(true);
+      setDeployError(null);
+      
+      await saveBlogPost(
+        editorInstance.getHTML(),
+        seoMetadata
+      );
+
+      // Show success message
+      alert('Blog post deployed successfully!');
+    } catch (error) {
+      setDeployError(error instanceof Error ? error.message : 'Failed to deploy blog post');
+    } finally {
+      setIsDeploying(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -165,10 +190,40 @@ function App() {
                 onFinalize={handleFinalize}
               />
               {seoMetadata && (
-                <SEOMetadataForm
-                  metadata={seoMetadata}
-                  onChange={setSeoMetadata}
-                />
+                <>
+                  <SEOMetadataForm
+                    metadata={seoMetadata}
+                    onChange={setSeoMetadata}
+                  />
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      onClick={handleDeploy}
+                      disabled={isDeploying}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                    >
+                      {isDeploying ? (
+                        <>
+                          <Settings className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                          Deploying...
+                        </>
+                      ) : (
+                        'Deploy Blog Post'
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+              {deployError && (
+                <div className="mt-4 rounded-md bg-red-900/50 border border-red-700 p-4">
+                  <div className="flex">
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-red-400">Error</h3>
+                      <div className="mt-2 text-sm text-red-300">
+                        <p>{deployError}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           )}
