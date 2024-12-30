@@ -196,6 +196,41 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
             style: `color: ${theme.colors.text};`
           }
         },
+        bold: {
+          HTMLAttributes: {
+            style: `color: ${theme.colors.text};`
+          }
+        },
+        italic: {
+          HTMLAttributes: {
+            style: `color: ${theme.colors.text};`
+          }
+        },
+        bulletList: {
+          HTMLAttributes: {
+            style: `color: ${theme.colors.text};`
+          }
+        },
+        orderedList: {
+          HTMLAttributes: {
+            style: `color: ${theme.colors.text};`
+          }
+        },
+        listItem: {
+          HTMLAttributes: {
+            style: `color: ${theme.colors.text};`
+          }
+        },
+        blockquote: {
+          HTMLAttributes: {
+            style: `color: ${theme.colors.text}; border-left-color: ${theme.colors.primary};`
+          }
+        },
+        code: {
+          HTMLAttributes: {
+            style: `color: ${theme.colors.text}; background-color: ${theme.colors.background};`
+          }
+        }
       }),
       Image.configure({
         HTMLAttributes: {
@@ -216,7 +251,20 @@ export function BlogContent({ content, onGenerateMore, isLoading, onContentChang
           background-color: ${theme.colors.background};
           --tw-prose-body: ${theme.colors.text};
           --tw-prose-headings: ${theme.colors.text};
-          color: ${theme.colors.text};
+          --tw-prose-bold: ${theme.colors.text};
+          --tw-prose-italic: ${theme.colors.text};
+          --tw-prose-quotes: ${theme.colors.text};
+          --tw-prose-quote-borders: ${theme.colors.primary};
+          --tw-prose-code: ${theme.colors.text};
+          --tw-prose-pre-code: ${theme.colors.text};
+          --tw-prose-pre-bg: ${theme.colors.background};
+          --tw-prose-th: ${theme.colors.text};
+          --tw-prose-td: ${theme.colors.text};
+          --tw-prose-invert: ${theme.colors.text};
+          
+          /* Ensure all text elements inherit the correct color */
+          * { color: ${theme.colors.text}; }
+          strong, em, code, pre, blockquote, li { color: ${theme.colors.text}; }
         `
       }
     },
