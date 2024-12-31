@@ -1,7 +1,6 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
-import { PROJECT } from '../../lib/util/constants';
 
 const { Header: AntHeader } = Layout;
 
@@ -20,11 +19,11 @@ export function Header() {
         <Link to="/" className="flex items-center">
           <img 
             src="/logo.svg" 
-            alt={PROJECT.name} 
+            alt="Bloggy Logo"
             className="h-8 w-auto"
           />
           <span className="ml-2 text-xl font-bold text-gray-800">
-            {PROJECT.name}
+            Bloggy
           </span>
         </Link>
 

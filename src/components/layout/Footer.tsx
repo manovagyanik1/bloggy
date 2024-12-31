@@ -1,7 +1,6 @@
 import React from 'react';
 import { Layout } from 'antd';
 import { Link } from 'react-router-dom';
-import { PROJECT } from '../../lib/util/constants';
 
 const { Footer: AntFooter } = Layout;
 
@@ -11,9 +10,9 @@ export function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-white font-bold mb-4">{PROJECT.name}</h3>
+            <h3 className="text-white font-bold mb-4">Bloggy</h3>
             <p className="text-sm">
-              Professional screen recording and sharing platform
+              Free AI-powered blog generator for everyone
             </p>
           </div>
 
@@ -47,7 +46,7 @@ export function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-gray-400">
           <div className="flex justify-between items-center">
-            <p>&copy; {new Date().getFullYear()} {PROJECT.name}. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Bloggy. All rights reserved.</p>
             <div className="flex space-x-4">
               <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
