@@ -3,14 +3,15 @@ import { Card } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import { formatDate } from '../lib/util/date';
 import { BlogPost } from '../lib/types/blog';
+import { useNavigate } from 'react-router-dom';
 
 interface BlogCardProps {
   blog: BlogPost;
-  onClick?: () => void;
 }
 
-export function BlogCard({ blog, onClick }: BlogCardProps) {
-  const { seo_metadata, content, created_at } = blog;
+export function BlogCard({ blog }: BlogCardProps) {
+  const navigate = useNavigate();
+  const { content, created_at } = blog;
   
   // Get first paragraph of content for preview
   const previewText = content
@@ -20,12 +21,12 @@ export function BlogCard({ blog, onClick }: BlogCardProps) {
   return (
     <Card
       hoverable
-      onClick={onClick}
+      onClick={() => navigate(`/blog/${blog.id}`)}
       className="h-full"
       cover={
         <div className="h-48 bg-gray-100 flex items-center justify-center">
           <img
-            alt={seo_metadata.seoTitle}
+            alt={blog.seo_metadata.seo_title}  
             src="https://via.placeholder.com/400x200"
             className="object-cover h-full w-full"
           />
@@ -33,7 +34,7 @@ export function BlogCard({ blog, onClick }: BlogCardProps) {
       }
     >
       <Card.Meta
-        title={seo_metadata.seoTitle}
+        title={blog.seo_metadata.seo_title}
         description={
           <div className="space-y-2">
             <p className="text-gray-600 line-clamp-3">{previewText}</p>

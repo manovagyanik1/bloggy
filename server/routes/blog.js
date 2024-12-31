@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { getBlogBySlug, getBlogsByProject } from '../controllers/blog.js';
+import { getBlogById, getBlogsByProject } from '../controllers/blog.js';
 
 const router = Router();
 
 router.get('/project/:projectId', getBlogsByProject);
-router.get('/:projectId/:slug', getBlogBySlug);
+router.get('/:id', getBlogById);
 
 export const blogRoutes = router; 

@@ -2,10 +2,10 @@ import { SEOMetadata } from "../../components/SEOMetadataForm";
 
 export interface BlogPost {
   id: string;
-  projectId: string;
-  projectName: string;
+  project_id: string;
+  project_name: string;
   content: string;
-  seoMetadata: SEOMetadata;
-  createdAt: string;
-  updatedAt: string;
+  seo_metadata: SEOMetadata;
+  created_at: string;
+  updated_at: string;
 } 

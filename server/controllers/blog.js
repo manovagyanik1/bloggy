@@ -21,15 +21,14 @@ export async function getBlogsByProject(req, res) {
   }
 }
 
-export async function getBlogBySlug(req, res) {
+export async function getBlogById(req, res) {
   try {
-    const { projectId, slug } = req.params;
+    const { id } = req.params;
 
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
-      .eq('project_id', projectId)
-      .eq('seo_metadata->slug', slug)
+      .eq('id', id)
       .single();
 
     if (error) throw error;
