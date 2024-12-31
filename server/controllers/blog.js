@@ -44,4 +44,31 @@ export async function getBlogById(req, res) {
       error: 'Failed to fetch blog post' 
     });
   }
+}
+
+export async function getBlogBySlug(req, res) {
+  try {
+    const { project_id, slug } = req.params;
+
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('project_id', project_id)
+      .eq('slug', slug)
+      .single();
+
+    if (error) throw error;
+    if (!data) {
+      return res.status(404).json({ 
+        error: 'Blog post not found' 
+      });
+    }
+
+    return res.json(data);
+  } catch (error) {
+    console.error('Error fetching blog by slug:', error);
+    return res.status(500).json({ 
+      error: 'Failed to fetch blog post' 
+    });
+  }
 } 
