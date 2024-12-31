@@ -11,6 +11,8 @@ import { BlogViewPage } from './pages/BlogViewPage';
 import { AboutPage } from './pages/AboutPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
+import { CreateBlogPage } from './pages/CreateBlogPage';
+import { UpdateBlogPage } from './pages/UpdateBlogPage';
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
         <MainLayout>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/create" element={<CreateBlogPage />} />
+            <Route path="/edit/:id" element={<UpdateBlogPage />} />
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:id" element={<BlogViewPage />} />
             <Route path="/about" element={<AboutPage />} />

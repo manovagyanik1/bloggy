@@ -20,16 +20,7 @@ export function BlogCard({ blog }: BlogCardProps) {
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate('/', {
-      state: {
-        editMode: true,
-        blogData: {
-          content: blog.content,
-          seo_metadata: blog.seo_metadata,
-          id: blog.id
-        }
-      }
-    });
+    navigate(`/edit/${blog.id}`);
   };
 
   return (

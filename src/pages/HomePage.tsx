@@ -1,242 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import { BlogForm, BlogFormData } from '../components/BlogForm';
-import { generateBlogHTML, generateMoreContent, regenerateSection } from '../lib/blog/generator';
-import { BlogContent } from '../components/BlogContent';
-import { Editor } from '@tiptap/react';
-import { SEOMetadata, SEOMetadataForm } from '../components/SEOMetadataForm';
-import { finalizeBlog } from '../lib/blog/generator';
-import { saveBlogPost, updateBlogPost } from '../lib/supabase';
-import { Settings } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, Wand2, Share2, Sparkles, Zap } from 'lucide-react';
 
 export function HomePage() {
-  const location = useLocation();
-  const editData = location.state?.blogData;
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<BlogFormData | null>(null);
-  const [editedContent, setEditedContent] = useState<string | null>(null);
-  const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
-  const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
-  const [isDeploying, setIsDeploying] = useState(false);
-  const [deployError, setDeployError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (editData && Object.keys(editData).length > 0) {
-      if (editData.content) {
-        setGeneratedContent(editData.content);
-      }
-      if (editData.seoMetadata && Object.keys(editData.seoMetadata).length > 0) {
-        setSeoMetadata(editData.seoMetadata);
-      }
-    }
-  }, [editData]);
-
-  const handleSubmit = async (data: BlogFormData) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      setFormData(data);
-      
-      const content = await generateBlogHTML({
-        title: data.title,
-        seoKeywords: data.seoKeywords,
-        ignoreSections: data.ignoreSections,
-        generateSections: data.generateSections,
-        apiProvider: data.apiProvider,
-        customPrompt: data.customPrompt,
-        themeName: data.themeName,
-      });
-      
-      setGeneratedContent(content);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while generating the blog');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleContentChange = (newContent: string) => {
-    setEditedContent(newContent);
-  };
-
-  const handleGenerateMore = async () => {
-    if (!generatedContent || !formData || !editorInstance) return;
-    
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const additionalContent = await generateMoreContent(
-        editedContent || generatedContent,
-        {
-          title: formData.title,
-          seoKeywords: formData.seoKeywords,
-          ignoreSections: formData.ignoreSections,
-          generateSections: formData.generateSections,
-          apiProvider: formData.apiProvider,
-          customPrompt: formData.customPrompt,
-          themeName: formData.themeName,
-        }
-      );
-
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = additionalContent;
-      const cleanContent = tempDiv.innerHTML
-        .replace(/<div[^>]*>([\s\S]*)<\/div>/i, '$1')
-        .trim();
-
-      editorInstance
-        .chain()
-        .focus()
-        .command(({ commands }) => {
-          commands.setTextSelection(editorInstance.state.doc.content.size);
-          return true;
-        })
-        .insertContent('<br><br>')
-        .insertContent(cleanContent)
-        .run();
-
-      setEditedContent(editorInstance.getHTML());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while generating more content');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRegenerateSection = async (context: {
-    preceding: string;
-    selected: string;
-    succeeding: string;
-    additionalPrompt: string;
-  }) => {
-    if (!formData) return '';
-    
-    return regenerateSection({
-      ...context,
-      apiProvider: formData.apiProvider
-    });
-  };
-
-  const handleFinalize = async () => {
-    if (!editorInstance) return;
-    
-    try {
-      setIsLoading(true);
-      const metadata = await finalizeBlog(editorInstance.getHTML());
-      setSeoMetadata(metadata);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to generate SEO metadata');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeploy = async () => {
-    if (!editorInstance || !seoMetadata) return;
-    
-    try {
-      setIsDeploying(true);
-      setDeployError(null);
-      
-      const content = editorInstance.getHTML();
-      
-      if (editData?.id) {
-        await updateBlogPost(editData.id, content, seoMetadata);
-        alert('Blog post updated successfully!');
-      } else {
-        await saveBlogPost(content, seoMetadata);
-        alert('Blog post deployed successfully!');
-      }
-    } catch (error) {
-      setDeployError(error instanceof Error ? error.message : 'Failed to deploy blog post');
-    } finally {
-      setIsDeploying(false);
-    }
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-indigo-400 text-center mb-8">
-            AI Blog Generator
-          </h1>
-          
-          <div className="bg-gray-800 shadow-xl shadow-indigo-500/10 sm:rounded-lg border border-gray-700">
-            <div className="px-4 py-5 sm:p-6">
-              <BlogForm 
-                onSubmit={handleSubmit} 
-                isLoading={isLoading} 
-                hasContent={!!generatedContent}
-              />
+      {/* Hero Section */}
+      <div className="relative isolate px-6 pt-14 lg:px-8">
+        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+              AI-Powered Blog Generation Made Simple
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-gray-300">
+              Create engaging, SEO-optimized blog content in minutes. Let AI handle the writing while you focus on what matters most.
+            </p>
+            <div className="mt-10 flex items-center justify-center gap-x-6">
+              <button
+                onClick={() => navigate('/create')}
+                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                Create Blog Post
+                <ArrowRight className="ml-2 h-4 w-4 inline" />
+              </button>
+              <button
+                onClick={() => navigate('/blog')}
+                className="text-sm font-semibold leading-6 text-white"
+              >
+                View Blog Posts <span aria-hidden="true">→</span>
+              </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          {error && (
-            <div className="mt-8 rounded-md bg-red-900/50 border border-red-700 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-400">Error</h3>
-                  <div className="mt-2 text-sm text-red-300">
-                    <p>{error}</p>
-                  </div>
-                </div>
+      {/* Features Section */}
+      <div className="py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:text-center">
+            <h2 className="text-base font-semibold leading-7 text-indigo-400">
+              Faster blogging
+            </h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Everything you need to create amazing blog content
+            </p>
+            <p className="mt-6 text-lg leading-8 text-gray-300">
+              Our AI-powered platform helps you create, optimize, and manage your blog content with ease.
+            </p>
+          </div>
+          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+              <div className="flex flex-col">
+                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-white">
+                  <Wand2 className="h-5 w-5 flex-none text-indigo-400" />
+                  AI-Powered Writing
+                </dt>
+                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-300">
+                  <p className="flex-auto">
+                    Generate high-quality, engaging blog content with advanced AI technology.
+                  </p>
+                </dd>
               </div>
-            </div>
-          )}
+              <div className="flex flex-col">
+                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-white">
+                  <Sparkles className="h-5 w-5 flex-none text-indigo-400" />
+                  SEO Optimization
+                </dt>
+                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-300">
+                  <p className="flex-auto">
+                    Automatically optimize your content for search engines with smart metadata generation.
+                  </p>
+                </dd>
+              </div>
+              <div className="flex flex-col">
+                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-white">
+                  <Zap className="h-5 w-5 flex-none text-indigo-400" />
+                  Quick Editing
+                </dt>
+                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-300">
+                  <p className="flex-auto">
+                    Easily edit and refine your content with our intuitive editor interface.
+                  </p>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
 
-          {generatedContent && !error && (
-            <div className="mt-8">
-              <BlogContent 
-                content={editedContent || generatedContent}
-                onGenerateMore={handleGenerateMore}
-                isLoading={isLoading}
-                onContentChange={handleContentChange}
-                onRegenerateSection={handleRegenerateSection}
-                onEditorReady={setEditorInstance}
-                onFinalize={handleFinalize}
-              />
-              {seoMetadata && (
-                <>
-                  <SEOMetadataForm
-                    metadata={seoMetadata}
-                    onChange={setSeoMetadata}
-                  />
-                  <div className="mt-6 flex justify-end">
-                    <button
-                      onClick={handleDeploy}
-                      disabled={isDeploying}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-                    >
-                      {isDeploying ? (
-                        <>
-                          <Settings className="animate-spin -ml-1 mr-2 h-4 w-4" />
-                          Deploying...
-                        </>
-                      ) : (
-                        'Deploy Blog Post'
-                      )}
-                    </button>
-                  </div>
-                </>
-              )}
-              {deployError && (
-                <div className="mt-4 rounded-md bg-red-900/50 border border-red-700 p-4">
-                  <div className="flex">
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-red-400">Error</h3>
-                      <div className="mt-2 text-sm text-red-300">
-                        <p>{deployError}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+      {/* CTA Section */}
+      <div className="relative isolate mt-32 px-6 py-32 sm:mt-56 sm:py-40 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Start creating amazing blog content today
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+            Join thousands of content creators who are already using our platform to generate engaging blog posts.
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-x-6">
+            <button
+              onClick={() => navigate('/create')}
+              className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Get started
+            </button>
+            <button
+              onClick={() => navigate('/about')}
+              className="text-sm font-semibold leading-6 text-white"
+            >
+              Learn more <span aria-hidden="true">→</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
