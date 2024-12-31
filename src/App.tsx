@@ -7,6 +7,7 @@ import { SEOMetadata, SEOMetadataForm } from './components/SEOMetadataForm';
 import { finalizeBlog } from './lib/blog/generator';
 import { saveBlogPost } from './lib/supabase';
 import { Settings } from 'lucide-react';
+import { BlogList } from './components/BlogList';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -149,6 +150,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <BlogList />
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold text-indigo-400 text-center mb-8">

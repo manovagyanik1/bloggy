@@ -120,9 +120,9 @@ ONLY implement the frontend, openapi and claude api token should be used in the 
 
 ### Frontend
 - **Framework:** React with TypeScript.
-- **UI Library:** Tailwind CSS or Material-UI.
+- **UI Library:** Tailwind CSS, antd
 - **State Management:** Redux Toolkit or Context API.
-- **Text Editor:** Draft.js.
+- **Text Editor:** tiptap
 
 
 ### AI Integration
