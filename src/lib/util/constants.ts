@@ -12,8 +12,8 @@ export const API_CONFIG = {
 
 export const PROJECT = {
   id: '4fc7eb1b-edbb-4a2f-b406-c53264e9f5fd',
-  name: 'clipy',
-  slug: 'clipy'
+  name: 'bloggy',
+  slug: 'bloggy'
 } as const;
 
 export const getApiUrl = (path: string) => {

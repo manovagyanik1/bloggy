@@ -50,7 +50,6 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
 
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header */}
       <header className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           {seo_metadata.seo_title}  
@@ -73,9 +72,9 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
           </p>
         )}
 
-        {seo_metadata.secondary_keywords?.length > 0 && (
+        {seo_metadata.keywords?.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {seo_metadata.secondary_keywords.map((keyword, index) => (
+            {seo_metadata.keywords.map((keyword, index) => (
               <span 
                 key={index}
                 className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
@@ -88,26 +87,22 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
       </header>
 
       {/* Content */}
-      <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700">
+      <div className="prose prose-lg max-w-none">
         <EditorContent editor={editor} />
       </div>
 
       {/* Footer */}
       <footer className="mt-12 pt-8 border-t border-gray-200">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <ShareAltOutlined />
-              Share this post
-            </h2>
+            <h2 className="text-sm font-semibold text-gray-900">Share this post</h2>
             <div className="mt-2 flex gap-4">
               <button 
                 onClick={() => window.open(
                   `https://twitter.com/intent/tweet?text=${encodeURIComponent(seo_metadata.seo_title)}&url=${encodeURIComponent(window.location.href)}`,
                   '_blank'
                 )}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-                aria-label="Share on Twitter"
+                className="text-gray-600 hover:text-gray-900"
               >
                 Twitter
               </button>
@@ -116,20 +111,9 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
                   `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`,
                   '_blank'
                 )}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-                aria-label="Share on LinkedIn"
+                className="text-gray-600 hover:text-gray-900"
               >
                 LinkedIn
-              </button>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  message.success('Link copied to clipboard!');
-                }}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-                aria-label="Copy link"
-              >
-                Copy Link
               </button>
             </div>
           </div>
@@ -138,24 +122,6 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
             Last updated: {formatDate(updated_at)}
           </div>
         </div>
-
-        {/* Tags Section */}
-        {seo_metadata.secondary_keywords?.length > 0 && (
-          <div className="mt-8 pt-8 border-t border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {seo_metadata.secondary_keywords.map((keyword, index) => (
-                <span 
-                  key={index}
-                  className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors cursor-pointer"
-                  onClick={() => {/* Handle tag click */}}
-                >
-                  {keyword}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
       </footer>
     </article>
   );

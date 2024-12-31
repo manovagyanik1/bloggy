@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BlogForm, BlogFormData } from '../components/BlogForm';
 import { generateBlogHTML, generateMoreContent, regenerateSection } from '../lib/blog/generator';
 import { BlogContent } from '../components/BlogContent';
 import { Editor } from '@tiptap/react';
 import { SEOMetadata, SEOMetadataForm } from '../components/SEOMetadataForm';
 import { finalizeBlog } from '../lib/blog/generator';
-import { saveBlogPost } from '../lib/supabase';
+import { saveBlogPost, updateBlogPost } from '../lib/supabase';
 import { Settings } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export function HomePage() {
+  const location = useLocation();
+  const editData = location.state?.blogData;
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +21,17 @@ export function HomePage() {
   const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (editData && Object.keys(editData).length > 0) {
+      if (editData.content) {
+        setGeneratedContent(editData.content);
+      }
+      if (editData.seoMetadata && Object.keys(editData.seoMetadata).length > 0) {
+        setSeoMetadata(editData.seoMetadata);
+      }
+    }
+  }, [editData]);
 
   const handleSubmit = async (data: BlogFormData) => {
     try {
@@ -127,13 +141,15 @@ export function HomePage() {
       setIsDeploying(true);
       setDeployError(null);
       
-      await saveBlogPost(
-        editorInstance.getHTML(),
-        seoMetadata
-      );
-
-      // Show success message
-      alert('Blog post deployed successfully!');
+      const content = editorInstance.getHTML();
+      
+      if (editData?.id) {
+        await updateBlogPost(editData.id, content, seoMetadata);
+        alert('Blog post updated successfully!');
+      } else {
+        await saveBlogPost(content, seoMetadata);
+        alert('Blog post deployed successfully!');
+      }
     } catch (error) {
       setDeployError(error instanceof Error ? error.message : 'Failed to deploy blog post');
     } finally {

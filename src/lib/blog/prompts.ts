@@ -149,16 +149,16 @@ export function createFinalizePrompt(content: string) {
     
     Return the response in valid JSON format with these exact keys:
     {
-      "seoTitle": "",
-      "metaDescription": "",
+      "seo_title": "",
+      "meta_description": "",
       "slug": "",
-      "primaryKeyword": "",
-      "secondaryKeywords": [],
-      "socialTitle": "",
-      "socialDescription": "",
-      "readingTime": "",
+      "primary_keyword": "",
+      "keywords": [],
+      "social_title": "",
+      "social_description": "",
+      "reading_time": "",
       "category": "",
-      "canonicalUrl": ""
+      "canonical_url": ""
     }
     ---
     Return only the JSON, no other text or formatting.

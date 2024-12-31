@@ -3,7 +3,7 @@ import { getBlogById, getBlogsByProject } from '../controllers/blog.js';
 
 const router = Router();
 
-router.get('/project/:projectId', getBlogsByProject);
+router.get('/project/:project_id', getBlogsByProject);
 router.get('/:id', getBlogById);
 
 export const blogRoutes = router; 

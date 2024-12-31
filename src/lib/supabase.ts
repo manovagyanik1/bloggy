@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { SEOMetadata } from '../components/SEOMetadataForm';
+import { PROJECT } from './util/constants';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -20,19 +21,19 @@ export interface BlogPost {
   updated_at: string;
 }
 
-export async function saveBlogPost(content: string, seoMetadata: SEOMetadata) {
-  const projectId = '4fc7eb1b-edbb-4a2f-b406-c53264e9f5fd'; // Hardcoded for now
-  const projectName = 'clipy'; // Hardcoded for now
+export async function saveBlogPost(content: string, seo_metadata: SEOMetadata) {
+  const project_id = PROJECT.id;
+  const project_name = PROJECT.name;
 
   const { data, error } = await supabase
     .from('blog_posts')
     .insert([
       {
         id: crypto.randomUUID(),
-        project_id: projectId,
-        project_name: projectName,
+        project_id,
+        project_name,
         content,
-        seo_metadata: seoMetadata,
+        seo_metadata,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
@@ -41,5 +42,21 @@ export async function saveBlogPost(content: string, seoMetadata: SEOMetadata) {
     .single();
 
   if (error) throw error;
-  return data;
+  return data as BlogPost;
+}
+
+export async function updateBlogPost(id: string, content: string, seo_metadata: SEOMetadata) {
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .update({
+      content,
+      seo_metadata,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as BlogPost;
 } 

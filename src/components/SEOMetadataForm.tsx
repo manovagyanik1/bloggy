@@ -6,13 +6,25 @@ export interface SEOMetadata {
   meta_description: string;
   slug: string;
   primary_keyword: string;
-  secondary_keywords: string[];
+  keywords: string[];
   social_title: string;
   social_description: string;
   reading_time: string;
   category: string;
   canonical_url?: string;
 }
+
+const defaultMetadata: SEOMetadata = {
+  seo_title: '',
+  meta_description: '',
+  slug: '',
+  primary_keyword: '',
+  keywords: [],
+  social_title: '',
+  social_description: '',
+  reading_time: '',
+  category: '',
+};
 
 interface SEOMetadataFormProps {
   metadata: SEOMetadata;
@@ -21,6 +33,14 @@ interface SEOMetadataFormProps {
 
 export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
   const theme = getTheme();
+  
+  // Ensure we have valid metadata by merging with defaults
+  const validMetadata = {
+    ...defaultMetadata,
+    ...metadata,
+    // Ensure arrays are initialized
+    keywords: metadata.keywords || [],
+  };
 
   return (
     <div className="space-y-6 mt-8 p-6 rounded-lg border border-gray-700" 
@@ -35,13 +55,13 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           <label className="block text-sm font-medium" style={{ color: theme.colors.text }}>
             SEO Title
             <span className="text-xs ml-1" style={{ color: theme.colors.secondary }}>
-                ({metadata.seo_title.length}/60)
+              ({validMetadata.seo_title.length}/60)
             </span>
           </label>
           <input
             type="text"
-            value={metadata.seo_title}
-            onChange={(e) => onChange({ ...metadata, seo_title: e.target.value })}
+            value={validMetadata.seo_title}
+            onChange={(e) => onChange({ ...validMetadata, seo_title: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
             maxLength={60}
@@ -54,8 +74,8 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           </label>
           <input
             type="text"
-            value={metadata.slug}
-            onChange={(e) => onChange({ ...metadata, slug: e.target.value })}
+            value={validMetadata.slug}
+            onChange={(e) => onChange({ ...validMetadata, slug: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
           />
@@ -65,12 +85,12 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           <label className="block text-sm font-medium" style={{ color: theme.colors.text }}>
             Meta Description
             <span className="text-xs ml-1" style={{ color: theme.colors.secondary }}>
-              ({metadata.meta_description.length}/160)
+              ({validMetadata.meta_description.length}/160)
             </span>
           </label>
           <textarea
             value={metadata.meta_description}
-            onChange={(e) => onChange({ ...metadata, meta_description: e.target.value })}
+            onChange={(e) => onChange({ ...validMetadata, meta_description: e.target.value })}
             rows={3}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
@@ -84,8 +104,8 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           </label>
           <input
             type="text"
-            value={metadata.primary_keyword}
-            onChange={(e) => onChange({ ...metadata, primary_keyword: e.target.value })}
+            value={validMetadata.primary_keyword}
+            onChange={(e) => onChange({ ...validMetadata, primary_keyword: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
           />
@@ -93,10 +113,10 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
 
         <div>
           <label className="block text-sm font-medium" style={{ color: theme.colors.text }}>
-            Secondary Keywords
+            Keywords
           </label>
           <div className="mt-1 flex flex-wrap gap-2">
-            {metadata.secondary_keywords.map((keyword, index) => (
+            {validMetadata.keywords.map((keyword, index) => (
               <div 
                 key={index}
                 className="flex items-center bg-gray-700 rounded-md px-2 py-1"
@@ -105,9 +125,9 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    const newKeywords = [...metadata.secondary_keywords];
+                    const newKeywords = [...validMetadata.keywords];
                     newKeywords.splice(index, 1);
-                    onChange({ ...metadata, secondary_keywords: newKeywords });
+                    onChange({ ...validMetadata, keywords: newKeywords });
                   }}
                   className="ml-2 text-gray-400 hover:text-gray-300"
                 >
@@ -122,8 +142,8 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
                 if (e.key === 'Enter' && e.currentTarget.value) {
                   e.preventDefault();
                   onChange({
-                    ...metadata,
-                    secondary_keywords: [...metadata.secondary_keywords, e.currentTarget.value]
+                    ...validMetadata,
+                    keywords: [...validMetadata.keywords, e.currentTarget.value]
                   });
                   e.currentTarget.value = '';
                 }
@@ -140,8 +160,8 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           </label>
           <input
             type="text"
-            value={metadata.social_title}
-            onChange={(e) => onChange({ ...metadata, social_title: e.target.value })}
+            value={validMetadata.social_title}
+            onChange={(e) => onChange({ ...validMetadata, social_title: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
           />
@@ -153,10 +173,27 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           </label>
           <input
             type="text"
-            value={metadata.reading_time}
-            onChange={(e) => onChange({ ...metadata, reading_time: e.target.value })}
+            value={validMetadata.reading_time}
+            onChange={(e) => onChange({ ...validMetadata, reading_time: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium" style={{ color: theme.colors.text }}>
+            Meta Description
+            <span className="text-xs ml-1" style={{ color: theme.colors.secondary }}>
+              ({validMetadata.meta_description.length}/160)
+            </span>
+          </label>
+          <textarea
+            value={validMetadata.meta_description}
+            onChange={(e) => onChange({ ...validMetadata, meta_description: e.target.value })}
+            rows={3}
+            className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
+            maxLength={160}
           />
         </div>
 
@@ -165,8 +202,8 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
             Social Media Description
           </label>
           <textarea
-            value={metadata.social_description}
-            onChange={(e) => onChange({ ...metadata, social_description: e.target.value })}
+            value={validMetadata.social_description}
+            onChange={(e) => onChange({ ...validMetadata, social_description: e.target.value })}
             rows={2}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
@@ -179,8 +216,8 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           </label>
           <input
             type="text"
-            value={metadata.category}
-            onChange={(e) => onChange({ ...metadata, category: e.target.value })}
+            value={validMetadata.category}
+            onChange={(e) => onChange({ ...validMetadata, category: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
           />
@@ -195,8 +232,8 @@ export function SEOMetadataForm({ metadata, onChange }: SEOMetadataFormProps) {
           </label>
           <input
             type="url"
-            value={metadata.canonical_url || ''}
-            onChange={(e) => onChange({ ...metadata, canonical_url: e.target.value })}
+            value={validMetadata.canonical_url || ''}
+            onChange={(e) => onChange({ ...validMetadata, canonical_url: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
             placeholder="https://..."

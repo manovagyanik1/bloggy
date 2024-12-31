@@ -2,16 +2,15 @@ import { supabase } from '../lib/supabase.js';
 
 export async function getBlogsByProject(req, res) {
   try {
-    const { projectId } = req.params;
+    const { project_id } = req.params;
 
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
-      .eq('project_id', projectId)
+      .eq('project_id', project_id)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-
     return res.json(data);
   } catch (error) {
     console.error('Error fetching blogs:', error);
