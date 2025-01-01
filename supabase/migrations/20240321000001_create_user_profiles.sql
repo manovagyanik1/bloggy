@@ -1,7 +1,17 @@
--- Drop existing objects if they exist
+-- Cleanup
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP FUNCTION IF EXISTS handle_new_user();
+DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 DROP TABLE IF EXISTS user_profiles;
+
+-- Create updated_at function if not exists
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Create user profiles table
 CREATE TABLE user_profiles (
@@ -37,7 +47,6 @@ SECURITY DEFINER SET search_path = public
 LANGUAGE plpgsql
 AS $$
 BEGIN
-  -- Log the incoming data
   RAISE LOG 'TRIGGER DEBUG - START ---------------';
   RAISE LOG 'User ID: %', NEW.id;
   RAISE LOG 'Email: %', NEW.email;
@@ -78,21 +87,12 @@ END;
 $$;
 
 -- Create trigger for new user creation
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION handle_new_user();
 
 -- Create updated_at trigger
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE TRIGGER update_user_profiles_updated_at
   BEFORE UPDATE ON user_profiles
   FOR EACH ROW

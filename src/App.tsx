@@ -19,6 +19,8 @@ import { CookiePolicyPage } from './pages/CookiePolicyPage';
 import { ContactPage } from './pages/ContactPage';
 import { AuthCallback } from './pages/AuthCallback';
 import { ProfilePage } from './pages/ProfilePage';
+import { ProjectList } from './components/ProjectList';
+import { ProjectForm } from './components/ProjectForm';
 
 const App = () => {
   return (
@@ -74,6 +76,22 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <ProfilePage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/projects" 
+                element={
+                  <ProtectedRoute>
+                    <ProjectList />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/projects/new" 
+                element={
+                  <ProtectedRoute>
+                    <ProjectForm />
                   </ProtectedRoute>
                 } 
               />
