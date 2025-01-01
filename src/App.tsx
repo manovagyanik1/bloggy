@@ -18,6 +18,7 @@ import { UpdateBlogPage } from './pages/UpdateBlogPage';
 import { CookiePolicyPage } from './pages/CookiePolicyPage';
 import { ContactPage } from './pages/ContactPage';
 import { AuthCallback } from './pages/AuthCallback';
+import { ProfilePage } from './pages/ProfilePage';
 
 const App = () => {
   return (
@@ -65,6 +66,14 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <BlogViewPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
                   </ProtectedRoute>
                 } 
               />

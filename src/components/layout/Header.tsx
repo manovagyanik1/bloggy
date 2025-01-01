@@ -53,6 +53,14 @@ export function Header() {
                     {item.label}
                   </Link>
                 ))}
+                {user && (
+                  <Link 
+                    to="/profile"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Profile
+                  </Link>
+                )}
               </div>
             )}
           </div>
