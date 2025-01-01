@@ -40,38 +40,6 @@ const App = () => {
               
               {/* Protected Routes */}
               <Route 
-                path="/create" 
-                element={
-                  <ProtectedRoute>
-                    <CreateBlogPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/edit/:id" 
-                element={
-                  <ProtectedRoute>
-                    <UpdateBlogPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/blog" 
-                element={
-                  <ProtectedRoute>
-                    <BlogList />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/blog/:id" 
-                element={
-                  <ProtectedRoute>
-                    <BlogViewPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
                 path="/profile" 
                 element={
                   <ProtectedRoute>
@@ -79,6 +47,8 @@ const App = () => {
                   </ProtectedRoute>
                 } 
               />
+
+              {/* Project Routes */}
               <Route 
                 path="/projects" 
                 element={
@@ -95,32 +65,53 @@ const App = () => {
                   </ProtectedRoute>
                 } 
               />
+
+              {/* Blog Routes - Now nested under projects with 'blogs' plural */}
+              <Route 
+                path="/projects/:projectSlug/blogs" 
+                element={
+                  <ProtectedRoute>
+                    <BlogList />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/projects/:projectSlug/blogs/create" 
+                element={
+                  <ProtectedRoute>
+                    <CreateBlogPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/projects/:projectSlug/blogs/:id" 
+                element={
+                  <ProtectedRoute>
+                    <BlogViewPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/projects/:projectSlug/blogs/:id/edit" 
+                element={
+                  <ProtectedRoute>
+                    <UpdateBlogPage />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* Project Settings Route */}
+              <Route 
+                path="/projects/:projectSlug/settings" 
+                element={
+                  <ProtectedRoute>
+                    <ProjectForm mode="edit" />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
           </MainLayout>
-          <Toaster 
-            position="bottom-center"
-            toastOptions={{
-              duration: 5000,
-              style: {
-                background: '#333',
-                color: '#fff',
-              },
-              success: {
-                duration: 3000,
-                iconTheme: {
-                  primary: '#22c55e',
-                  secondary: '#fff',
-                },
-              },
-              error: {
-                duration: 4000,
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#fff',
-                },
-              },
-            }}
-          />
+          <Toaster />
         </Router>
       </AuthProvider>
     </HelmetProvider>

@@ -8,11 +8,27 @@ export function Header() {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
-  const menuItems = [
-    { key: '/blog', label: 'Blog' },
-    { key: '/create', label: 'Create' },
-    { key: '/about', label: 'About' },
-  ];
+  // Check if we're in a project context
+  const projectMatch = location.pathname.match(/^\/projects\/([^\/]+)/);
+  const currentProject = projectMatch ? projectMatch[1] : null;
+
+  const getMenuItems = () => {
+    if (currentProject) {
+      // Show blog-related items when inside a project
+      return [
+        { key: `/projects/${currentProject}/blogs`, label: 'Blogs' },
+        { key: `/projects/${currentProject}/blogs/create`, label: 'Create Blog' },
+        { key: `/projects/${currentProject}/settings`, label: 'Project Settings' },
+      ];
+    }
+    // Show project-related items when not in a project
+    return [
+      { key: '/projects', label: 'Projects' },
+      { key: '/projects/new', label: 'Create Project' },
+    ];
+  };
+
+  const menuItems = getMenuItems();
 
   const handleLogin = async () => {
     try {
@@ -53,14 +69,12 @@ export function Header() {
                     {item.label}
                   </Link>
                 ))}
-                {user && (
-                  <Link 
-                    to="/profile"
-                    className="text-gray-300 hover:text-white"
-                  >
-                    Profile
-                  </Link>
-                )}
+                <Link 
+                  to="/profile"
+                  className="text-gray-300 hover:text-white"
+                >
+                  Profile
+                </Link>
               </div>
             )}
           </div>

@@ -53,7 +53,7 @@ export function ProjectList() {
           className="relative rounded-lg border border-gray-700 bg-gray-800 px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-600"
         >
           <div className="flex-1 min-w-0">
-            <Link to={`/projects/${project.slug}`} className="focus:outline-none">
+            <Link to={`/projects/${project.slug}/settings`} className="focus:outline-none">
               <span className="absolute inset-0" aria-hidden="true" />
               <p className="text-sm font-medium text-white">{project.name}</p>
               <p className="text-sm text-gray-400 truncate">{project.description}</p>

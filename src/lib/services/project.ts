@@ -42,4 +42,16 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
 
   if (error) throw error;
   return data;
+}
+
+export async function updateProject(id: string, project: Partial<CreateProjectInput>): Promise<Project> {
+  const { data, error } = await supabase
+    .from('projects')
+    .update(project)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 } 
