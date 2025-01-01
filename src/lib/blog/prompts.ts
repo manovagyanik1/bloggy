@@ -1,4 +1,5 @@
 import { BlogTheme } from '../types/theme';
+import { Project } from '../types/project';
 
 interface PromptParams {
   title: string;
@@ -7,14 +8,12 @@ interface PromptParams {
   ignoreSections: string[];
   customPrompt?: string;
   theme: BlogTheme;
+  project: Project;
 }
-const websiteName = "Clipy";
-const url = "https://clipy.online/";
-const webappContext = `Clipy is a cloud-powered screen recording platform that simplifies professional screen recording, cloud storage, and instant sharing. 
- It offers powerful features for seamless screen recording, allowing users to capture their screens effortlessly. The platform integrates cloud storage, enabling users to save their recordings securely and access them from anywhere. Additionally, Clipy provides instant sharing capabilities, making it easy to share recordings with others quickly. This combination of features makes Clipy a valuable tool for professionals seeking an efficient and user-friendly screen recording solution.`
-const preparedContext = `Learn about website ${websiteName} url: ${url} ${webappContext}`
 
 export function createInitialPrompt(params: PromptParams): string {
+  const preparedContext = `Learn about website ${params.project.name} url: ${params.project.url} ${params.project.description}`;
+
   return `
     ${preparedContext}
     Generate a blog article in clean HTML format compatible with TipTap editor.
@@ -55,6 +54,8 @@ export function createInitialPrompt(params: PromptParams): string {
 export function createContinuationPrompt(params: PromptParams & {
   previousContent: string;
 }): string {
+  const preparedContext = `Learn about website ${params.project.name} url: ${params.project.url} ${params.project.description}`;
+
   return `
     ${preparedContext}
     Continue the following blog article in clean HTML format compatible with TipTap editor.
@@ -102,9 +103,12 @@ interface RegenerationPromptParams {
   selected: string;
   succeeding: string;
   additionalPrompt: string;
+  project: Project;
 }
 
 export function createRegenerationPrompt(params: RegenerationPromptParams): string {
+  const preparedContext = `Learn about website ${params.project.name} url: ${params.project.url} ${params.project.description}`;
+
   return `
     ${preparedContext}
     I have a blog post section that needs to be rewritten.
@@ -126,8 +130,11 @@ export function createRegenerationPrompt(params: RegenerationPromptParams): stri
   `;
 }
 
-export function createFinalizePrompt(content: string) {
+export function createFinalizePrompt(content: string, project: Project) {
+  const preparedContext = `Learn about website ${project.name} url: ${project.url} ${project.description}`;
+
   return `
+    ${preparedContext}
     Analyze the following blog content and generate SEO-optimized metadata:
     ---
     ${content}
@@ -164,3 +171,11 @@ export function createFinalizePrompt(content: string) {
     Return only the JSON, no other text or formatting.
   `;
 }
+
+export const webappContext = `
+Clipy is a cloud-powered screen recording platform that simplifies professional screen recording, cloud storage, and instant sharing. 
+It offers powerful features for seamless screen recording, allowing users to capture their screens effortlessly. The platform integrates cloud storage, enabling users to save their recordings securely and access them from anywhere. Additionally, Clipy provides instant sharing capabilities, making it easy to share recordings with others quickly. This combination of features makes Clipy a valuable tool for professionals seeking an efficient and user-friendly screen recording solution.
+
+Example website context:
+My website is a professional photography portfolio showcasing landscape and portrait photography. It features galleries organized by theme, client testimonials, booking system for photo sessions, and a blog section sharing photography tips and behind-the-scenes content. The target audience includes potential clients, art directors, and photography enthusiasts looking for high-quality photography services or inspiration.
+`;

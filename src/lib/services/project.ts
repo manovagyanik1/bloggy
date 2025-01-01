@@ -56,4 +56,15 @@ export async function updateProject(id: string, project: Partial<CreateProjectIn
 
   if (error) throw error;
   return data;
-} 
+}
+
+export const deleteProject = async (id: string): Promise<void> => {
+  const { error } = await supabase
+    .from('projects')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}; 

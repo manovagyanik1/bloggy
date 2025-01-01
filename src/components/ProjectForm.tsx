@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { CreateProjectInput } from '../lib/types/project';
 import { darkTheme } from '../lib/themes/darkTheme';
@@ -14,7 +14,7 @@ interface ProjectFormProps {
 
 export function ProjectForm({ onSubmit, initialValues, isLoading = false }: ProjectFormProps) {
   const [form] = Form.useForm();
-  const [selectedTheme, setSelectedTheme] = React.useState('dark');
+  const [selectedTheme, setSelectedTheme] = useState('dark');
 
   const validateThemeJson = (_: any, value: string) => {
     try {
@@ -116,27 +116,26 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
       <Form.Item
         label="Description"
         name="description"
-        rules={[
-          { max: 500, message: 'Description cannot be longer than 500 characters' }
-        ]}
+        help="This description will be used to train the AI about your website's context. Be specific about your website's purpose, features, and target audience."
       >
         <Input.TextArea 
-          placeholder="Describe your project..."
+          placeholder="Describe your project in detail. For example: 'My website is a professional photography portfolio showcasing landscape and portrait photography. It features galleries organized by theme, client testimonials, booking system for photo sessions, and a blog section sharing photography tips and behind-the-scenes content. The target audience includes potential clients, art directors, and photography enthusiasts.'"
           rows={4}
         />
       </Form.Item>
 
-      <Form.Item
-        label="Theme Type"
-        name="themeType"
-        initialValue={selectedTheme}
-      >
-        <Select onChange={handleThemeChange}>
+      <div className="mb-4">
+        <label className="block mb-2">Theme Type</label>
+        <Select 
+          value={selectedTheme}
+          onChange={handleThemeChange}
+          className="w-full"
+        >
           <Option value="dark">Dark Theme</Option>
           <Option value="light">Light Theme</Option>
           <Option value="custom">Custom Theme</Option>
         </Select>
-      </Form.Item>
+      </div>
 
       <Form.Item
         label="Theme Configuration"

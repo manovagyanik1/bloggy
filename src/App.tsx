@@ -21,6 +21,7 @@ import { AuthCallback } from './pages/AuthCallback';
 import { ProfilePage } from './pages/ProfilePage';
 import { ProjectList } from './components/ProjectList';
 import { CreateProjectPage } from './pages/CreateProjectPage';
+import { ProjectsPage } from './pages/ProjectsPage';
 
 const App = () => {
   return (
@@ -53,7 +54,7 @@ const App = () => {
                 path="/projects" 
                 element={
                   <ProtectedRoute>
-                    <ProjectList />
+                    <ProjectsPage />
                   </ProtectedRoute>
                 } 
               />

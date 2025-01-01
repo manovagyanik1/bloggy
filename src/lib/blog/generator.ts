@@ -3,6 +3,7 @@ import { getTheme } from '../themes';
 import { callOpenAI } from '../api/openai';
 import { callClaude } from '../api/claude';
 import { createInitialPrompt, createContinuationPrompt, createRegenerationPrompt, createFinalizePrompt } from './prompts';
+import { Project } from '../types/project';
 
 export interface GenerateBlogParams {
   title: string;
@@ -12,11 +13,16 @@ export interface GenerateBlogParams {
   apiProvider: "openai" | "claude";
   customPrompt?: string;
   themeName?: string;
+  project: Project;
 }
 
 export async function generateBlogHTML(params: GenerateBlogParams): Promise<string> {
   const theme = getTheme(params.themeName);
-  const prompt = createInitialPrompt({ ...params, theme });
+  const prompt = createInitialPrompt({ 
+    ...params, 
+    theme,
+    project: params.project 
+  });
   
   const content = await (params.apiProvider === "openai" 
     ? callOpenAI(prompt) 
@@ -33,7 +39,8 @@ export async function generateMoreContent(
   const prompt = createContinuationPrompt({
     ...params,
     previousContent,
-    theme
+    theme,
+    project: params.project
   });
   
   const content = await (params.apiProvider === "openai" 
@@ -43,15 +50,15 @@ export async function generateMoreContent(
   return content;
 }
 
-export async function finalizeBlog(
-  content: string,
-): Promise<string> {
-  const prompt = createFinalizePrompt(content);
+export async function finalizeBlog(content: string, project: Project): Promise<any> {
+  const prompt = createFinalizePrompt(content, project);
   
-  const metadata = await callOpenAI(prompt);
-  // the response has ``` json\n and \n``` so we need to remove them
-  const json = metadata.replace(/```json\n|\n```/g, '');
-  return JSON.parse(json);
+  const result = await callOpenAI(prompt);
+  try {
+    return JSON.parse(result);
+  } catch (error) {
+    throw new Error('Failed to parse AI response for blog finalization');
+  }
 }
 
 export function wrapContent(content: string, theme: BlogTheme): string {
@@ -73,6 +80,7 @@ interface RegenerateSectionParams extends Pick<GenerateBlogParams, 'apiProvider'
   selected: string;
   succeeding: string;
   additionalPrompt: string;
+  project: Project;
 }
 
 export async function regenerateSection(params: RegenerateSectionParams): Promise<string> {

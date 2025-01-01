@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Card, Button, Modal, Typography, Space } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Project } from '../lib/types/project';
 import { 
   DeleteOutlined, 
@@ -9,7 +9,8 @@ import {
   GlobalOutlined,
   ProjectOutlined,
   ClockCircleOutlined,
-  PlusOutlined
+  PlusOutlined,
+  EyeOutlined
 } from '@ant-design/icons';
 import { formatDate } from '../lib/util/date';
 
@@ -23,6 +24,22 @@ interface ProjectListProps {
 }
 
 export function ProjectList({ projects, onDelete, isLoading = false }: ProjectListProps) {
+  const navigate = useNavigate();
+
+  const handleViewProject = (project: Project) => {
+    navigate(`/projects/${project.slug}/blogs`);
+  };
+
+  const handleEdit = (e: React.MouseEvent, project: Project) => {
+    e.stopPropagation();
+    navigate(`/projects/${project.slug}/settings`);
+  };
+
+  const handleDelete = (e: React.MouseEvent, project: Project) => {
+    e.stopPropagation();
+    showDeleteConfirm(project);
+  };
+
   const showDeleteConfirm = (project: Project) => {
     confirm({
       title: 'Are you sure you want to delete this project?',
@@ -61,28 +78,43 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
           <List.Item>
             <Card 
               hoverable
-              className="h-full flex flex-col shadow-md"
+              className="h-full flex flex-col shadow-md cursor-pointer"
               headStyle={{ borderBottom: '2px solid #f0f0f0' }}
               title={
-                <div className="flex items-center justify-between py-2">
+                <div 
+                  className="flex items-center justify-between py-2"
+                  onClick={() => handleViewProject(project)}
+                >
                   <Text strong className="text-lg">
                     {project.name}
                   </Text>
                 </div>
               }
               actions={[
-                <Link to={`/projects/${project.id}/edit`} key="edit">
+                <Button 
+                  type="link" 
+                  key="view"
+                  onClick={() => handleViewProject(project)}
+                >
+                  <EyeOutlined /> View Blogs
+                </Button>,
+                <Button 
+                  type="link"
+                  key="edit"
+                  onClick={(e) => handleEdit(e, project)}
+                >
                   <EditOutlined /> Edit
-                </Link>,
+                </Button>,
                 <Button 
                   type="text" 
                   danger 
-                  onClick={() => showDeleteConfirm(project)}
+                  onClick={(e) => handleDelete(e, project)}
                   key="delete"
                 >
                   <DeleteOutlined /> Delete
                 </Button>
               ]}
+              onClick={() => handleViewProject(project)}
             >
               <div className="flex-grow space-y-4">
                 {project.description && (
@@ -91,7 +123,7 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
                   </Text>
                 )}
                 
-                <div className="space-y-3">
+                <div className="space-y-3" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center text-gray-500 hover:text-gray-700">
                     <GlobalOutlined className="mr-2 text-blue-500" />
                     <Text copyable={{ tooltips: ['Copy URL', 'URL Copied!'] }} className="text-sm">

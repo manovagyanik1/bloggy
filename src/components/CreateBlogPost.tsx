@@ -10,6 +10,7 @@ import { useLocation } from 'react-router-dom';
 import { BlogPost } from '../lib/types/blog';
 import { saveBlogPost } from '../lib/services/blog';
 import { updateBlogPost } from '../lib/services/blog';
+import { useProject } from '../lib/hooks/useProject';
 
 interface CreateBlogPostProps {
   initial_blog?: BlogPost;
@@ -19,9 +20,9 @@ interface CreateBlogPostProps {
 
 export function CreateBlogPost({ 
   initial_blog, 
-  is_editing = false,
   projectId 
 }: CreateBlogPostProps) {
+  const { project } = useProject(projectId);
   const location = useLocation();
   const editData = location.state?.blogData;
   const [isLoading, setIsLoading] = useState(false);
@@ -52,25 +53,19 @@ export function CreateBlogPost({
     }
   }, [editData]);
 
-  const handleSubmit = async (data: BlogFormData) => {
+  const handleGenerate = async (values: BlogFormData) => {
+    if (!project) return;
     try {
       setIsLoading(true);
       setError(null);
-      setFormData(data);
-      
       const content = await generateBlogHTML({
-        title: data.title,
-        seoKeywords: data.seoKeywords,
-        ignoreSections: data.ignoreSections,
-        generateSections: data.generateSections,
-        apiProvider: data.apiProvider,
-        customPrompt: data.customPrompt,
-        themeName: data.themeName,
+        ...values,
+        project
       });
-      
-      setGeneratedContent(content);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while generating the blog');
+      editorInstance?.commands.setContent(content);
+      setFormData(values);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to generate content');
     } finally {
       setIsLoading(false);
     }
@@ -81,45 +76,17 @@ export function CreateBlogPost({
   };
 
   const handleGenerateMore = async () => {
-    if (!generatedContent || !formData || !editorInstance) return;
+    if (!editorInstance || !formData || !project) return;
     
     try {
       setIsLoading(true);
-      setError(null);
-      
-      const additionalContent = await generateMoreContent(
-        editedContent || generatedContent,
-        {
-          title: formData.title,
-          seoKeywords: formData.seoKeywords,
-          ignoreSections: formData.ignoreSections,
-          generateSections: formData.generateSections,
-          apiProvider: formData.apiProvider,
-          customPrompt: formData.customPrompt,
-          themeName: formData.themeName,
-        }
+      const content = await generateMoreContent(
+        editorInstance.getHTML(),
+        { ...formData, project }
       );
-
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = additionalContent;
-      const cleanContent = tempDiv.innerHTML
-        .replace(/<div[^>]*>([\s\S]*)<\/div>/i, '$1')
-        .trim();
-
-      editorInstance
-        .chain()
-        .focus()
-        .command(({ commands }) => {
-          commands.setTextSelection(editorInstance.state.doc.content.size);
-          return true;
-        })
-        .insertContent('<br><br>')
-        .insertContent(cleanContent)
-        .run();
-
-      setEditedContent(editorInstance.getHTML());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while generating more content');
+      editorInstance.commands.setContent(editorInstance.getHTML() + content);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to generate more content');
     } finally {
       setIsLoading(false);
     }
@@ -131,20 +98,21 @@ export function CreateBlogPost({
     succeeding: string;
     additionalPrompt: string;
   }) => {
-    if (!formData) return '';
+    if (!formData || !project) return '';
     
     return regenerateSection({
       ...context,
-      apiProvider: formData.apiProvider
+      apiProvider: formData.apiProvider,
+      project
     });
   };
 
   const handleFinalize = async () => {
-    if (!editorInstance) return;
+    if (!editorInstance || !project) return;
     
     try {
       setIsLoading(true);
-      const metadata = await finalizeBlog(editorInstance.getHTML());
+      const metadata = await finalizeBlog(editorInstance.getHTML(), project);
       setSeoMetadata(metadata);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to generate SEO metadata');
@@ -187,7 +155,7 @@ export function CreateBlogPost({
           <div className="bg-gray-800 shadow-xl shadow-indigo-500/10 sm:rounded-lg border border-gray-700">
             <div className="px-4 py-5 sm:p-6">
               <BlogForm 
-                onSubmit={handleSubmit} 
+                onSubmit={handleGenerate} 
                 isLoading={isLoading} 
                 hasContent={!!generatedContent}
               />
