@@ -5,17 +5,23 @@ import { BlogContent } from './BlogContent';
 import { Editor } from '@tiptap/react';
 import { SEOMetadata, SEOMetadataForm } from './SEOMetadataForm';
 import { finalizeBlog } from '../lib/blog/generator';
-import { saveBlogPost, updateBlogPost } from '../lib/supabase';
 import { Settings } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { BlogPost } from '../lib/types/blog';
+import { saveBlogPost } from '../lib/services/blog';
+import { updateBlogPost } from '../lib/services/blog';
 
 interface CreateBlogPostProps {
   initial_blog?: BlogPost;
   is_editing?: boolean;
+  projectId: string;
 }
 
-export function CreateBlogPost({ initial_blog, is_editing = false }: CreateBlogPostProps) {
+export function CreateBlogPost({ 
+  initial_blog, 
+  is_editing = false,
+  projectId 
+}: CreateBlogPostProps) {
   const location = useLocation();
   const editData = location.state?.blogData;
   const [isLoading, setIsLoading] = useState(false);
@@ -157,10 +163,10 @@ export function CreateBlogPost({ initial_blog, is_editing = false }: CreateBlogP
       const content = editorInstance.getHTML();
       
       if (editData?.id) {
-        await updateBlogPost(editData.id, content, seoMetadata);
+        await updateBlogPost(editData.id, content, seoMetadata, projectId);
         alert('Blog post updated successfully!');
       } else {
-        await saveBlogPost(content, seoMetadata);
+        await saveBlogPost(content, seoMetadata, projectId);
         alert('Blog post deployed successfully!');
       }
     } catch (error) {

@@ -3,40 +3,49 @@ import { CreateBlogPost } from '../components/CreateBlogPost';
 import { Navigate, useParams } from 'react-router-dom';
 import { BlogPost } from '../lib/types/blog';
 import { Spin } from 'antd';
-import { API_ROUTES } from '../lib/util/constants';
+import { getBlogById } from '../lib/services/blog';
+import { toast } from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
+import { useProject } from '../lib/hooks/useProject';
 
 export function UpdateBlogPage() {
-  const { id } = useParams();
+  const { id, projectSlug } = useParams();
+  const { user } = useAuth();
+  const { project, isLoading: projectLoading, error: projectError } = useProject(projectSlug);
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchBlog() {
-      try {
-        const response = await fetch(API_ROUTES.GET_BLOG_BY_ID(id!));
-        if (!response.ok) {
-          throw new Error('Failed to fetch blog post');
-        }
-        const data = await response.json();
-        setBlog(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    if (id) {
+    if (id && user && project) {
       fetchBlog();
     }
-  }, [id]);
+  }, [id, user, project]);
 
-  if (!id) {
-    return <Navigate to="/" replace />;
+  const fetchBlog = async () => {
+    try {
+      const data = await getBlogById(id!);
+      
+      // Verify ownership
+      if (data.projects?.user_id !== user?.id) {
+        throw new Error('Unauthorized: You do not own this blog post');
+      }
+      
+      setBlog(data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'An error occurred';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!projectSlug || !id) {
+    return <Navigate to="/projects" replace />;
   }
 
-  if (isLoading) {
+  if (projectLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <Spin size="large" />
@@ -44,12 +53,12 @@ export function UpdateBlogPage() {
     );
   }
 
-  if (error || !blog) {
+  if (projectError || error || !project || !blog) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-red-400 text-center">
           <h2 className="text-xl font-semibold mb-2">Error</h2>
-          <p>{error || 'Blog post not found'}</p>
+          <p>{projectError || error || 'Blog post not found'}</p>
         </div>
       </div>
     );
@@ -60,6 +69,7 @@ export function UpdateBlogPage() {
       <CreateBlogPost 
         initial_blog={blog}
         is_editing={true}
+        projectId={project.id}
       />
     </div>
   );

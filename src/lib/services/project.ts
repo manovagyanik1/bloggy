@@ -33,7 +33,7 @@ export async function createProject(project: CreateProjectInput): Promise<Projec
   return data;
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
+export async function getProjectBySlug(slug: string): Promise<Project> {
   const { data, error } = await supabase
     .from('projects')
     .select('*')
@@ -41,6 +41,8 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
     .single();
 
   if (error) throw error;
+  if (!data) throw new Error('Project not found');
+  
   return data;
 }
 
