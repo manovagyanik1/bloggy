@@ -11,9 +11,16 @@ import ListItem from '@tiptap/extension-list-item';
 import Blockquote from '@tiptap/extension-blockquote';
 import { BlogPost } from '../lib/types/blog';
 import { Project } from '../lib/types/project';
-import { Spin, Alert } from 'antd';
+import { Spin, Alert, message } from 'antd';
 import { formatDate } from '../lib/util/date';
 import { Level } from '@tiptap/extension-heading'
+import { 
+  TwitterOutlined, 
+  LinkedinOutlined, 
+  FacebookOutlined, 
+  WhatsAppOutlined,
+  CopyOutlined
+} from '@ant-design/icons';
 
 interface BlogViewProps {
   blog: BlogPost;
@@ -59,7 +66,7 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
       }
     },
     layout: {
-      container: 'max-w-4xl mx-auto px-6 sm:px-8 py-12 bg-gray-900 min-h-screen',
+      container: 'w-full min-h-screen bg-gray-900',
       sectionSpacing: 'py-12 space-y-8',
       imageSpacing: 'my-8 space-y-4'
     }
@@ -154,106 +161,132 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
       className={project.theme.layout.container}
       style={{ backgroundColor: project.theme.colors.background }}
     >
-      <header className={project.theme.layout.sectionSpacing}>
-        <h1 
-          className={project.theme.fonts.heading}
-          style={{ color: project.theme.colors.text }}
-        >
-          {seo_metadata.seo_title}
-        </h1>
-        
-        <div 
-          className={project.theme.fonts.caption}
-          style={{ color: project.theme.colors.secondary }}
-        >
-          {formatDate(created_at)}
-        </div>
-
-        {seo_metadata.meta_description && (
-          <p 
-            className={project.theme.fonts.subheading}
+      <div className="max-w-4xl mx-auto px-6 sm:px-8 py-12">
+        <header className={project.theme.layout.sectionSpacing}>
+          <h1 
+            className={project.theme.fonts.heading}
             style={{ color: project.theme.colors.text }}
           >
-            {seo_metadata.meta_description}
-          </p>
-        )}
-
-        {seo_metadata.keywords?.length > 0 && (
-          <div className="flex flex-wrap gap-3 mt-6">
-            {seo_metadata.keywords.map((keyword, index) => (
-              <span 
-                key={index}
-                className="px-3 py-1.5 rounded-full text-sm font-medium inline-block"
-                style={{ 
-                  color: project.theme.colors.text,
-                  backgroundColor: `${project.theme.colors.primary}30`,
-                  border: `1px solid ${project.theme.colors.primary}`,
-                }}
-              >
-                {keyword}
-              </span>
-            ))}
-          </div>
-        )}
-      </header>
-
-      <div 
-        className={project.theme.fonts.body}
-        style={{ color: project.theme.colors.text }}
-      >
-        <EditorContent editor={editor} />
-      </div>
-
-      <footer 
-        className={project.theme.layout.sectionSpacing}
-        style={{ borderTopColor: project.theme.colors.secondary }}
-      >
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 
-              className={project.theme.fonts.subheading}
-              style={{ color: project.theme.colors.text }}
-            >
-              Share this post
-            </h2>
-            <div className={`flex gap-4 ${project.theme.layout.imageSpacing}`}>
-              <button 
-                onClick={() => window.open(
-                  `https://twitter.com/intent/tweet?text=${encodeURIComponent(seo_metadata.seo_title)}&url=${encodeURIComponent(shareUrl)}`,
-                  '_blank'
-                )}
-                className={project.theme.fonts.body}
-                style={{ 
-                  color: project.theme.colors.secondary,
-                  '&:hover': { color: project.theme.colors.primary }
-                }}
-              >
-                Twitter
-              </button>
-              <button 
-                onClick={() => window.open(
-                  `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
-                  '_blank'
-                )}
-                className={project.theme.fonts.body}
-                style={{ 
-                  color: project.theme.colors.secondary,
-                  '&:hover': { color: project.theme.colors.primary }
-                }}
-              >
-                LinkedIn
-              </button>
-            </div>
-          </div>
+            {seo_metadata.seo_title}
+          </h1>
           
           <div 
             className={project.theme.fonts.caption}
             style={{ color: project.theme.colors.secondary }}
           >
-            Last updated: {formatDate(updated_at)}
+            {formatDate(created_at)}
           </div>
+
+          {seo_metadata.meta_description && (
+            <p 
+              className={project.theme.fonts.subheading}
+              style={{ color: project.theme.colors.text }}
+            >
+              {seo_metadata.meta_description}
+            </p>
+          )}
+
+          {seo_metadata.keywords?.length > 0 && (
+            <div className="flex flex-wrap gap-3 mt-6">
+              {seo_metadata.keywords.map((keyword, index) => (
+                <span 
+                  key={index}
+                  className="px-3 py-1.5 rounded-full text-sm font-medium inline-block"
+                  style={{ 
+                    color: project.theme.colors.text,
+                    backgroundColor: `${project.theme.colors.primary}30`,
+                    border: `1px solid ${project.theme.colors.primary}`,
+                  }}
+                >
+                  {keyword}
+                </span>
+              ))}
+            </div>
+          )}
+        </header>
+
+        <div 
+          className={project.theme.fonts.body}
+          style={{ color: project.theme.colors.text }}
+        >
+          <EditorContent editor={editor} />
         </div>
-      </footer>
+
+        <footer 
+          className={project.theme.layout.sectionSpacing}
+          style={{ borderTopColor: project.theme.colors.secondary }}
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 
+                className={project.theme.fonts.subheading}
+                style={{ color: project.theme.colors.text }}
+              >
+                Share this post
+              </h2>
+              <div className="flex items-center gap-6 mt-4">
+                <button 
+                  onClick={() => window.open(
+                    `https://twitter.com/intent/tweet?text=${encodeURIComponent(seo_metadata.seo_title)}&url=${encodeURIComponent(shareUrl)}`,
+                    '_blank'
+                  )}
+                  className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
+                  style={{ backgroundColor: project.theme.colors.primary }}
+                >
+                  <TwitterOutlined className="text-xl" style={{ color: '#fff' }} />
+                </button>
+                <button 
+                  onClick={() => window.open(
+                    `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+                    '_blank'
+                  )}
+                  className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
+                  style={{ backgroundColor: project.theme.colors.primary }}
+                >
+                  <LinkedinOutlined className="text-xl" style={{ color: '#fff' }} />
+                </button>
+                <button 
+                  onClick={() => window.open(
+                    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+                    '_blank'
+                  )}
+                  className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
+                  style={{ backgroundColor: project.theme.colors.primary }}
+                >
+                  <FacebookOutlined className="text-xl" style={{ color: '#fff' }} />
+                </button>
+                <button 
+                  onClick={() => window.open(
+                    `https://wa.me/?text=${encodeURIComponent(`${seo_metadata.seo_title} ${shareUrl}`)}`,
+                    '_blank'
+                  )}
+                  className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
+                  style={{ backgroundColor: project.theme.colors.primary }}
+                >
+                  <WhatsAppOutlined className="text-xl" style={{ color: '#fff' }} />
+                </button>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareUrl);
+                    message.success('Link copied to clipboard!');
+                  }}
+                  className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
+                  style={{ backgroundColor: project.theme.colors.primary }}
+                >
+                  <CopyOutlined className="text-xl" style={{ color: '#fff' }} />
+                </button>
+              </div>
+            </div>
+            
+            <div 
+              className={project.theme.fonts.caption}
+              style={{ color: project.theme.colors.secondary }}
+            >
+              Last updated: {formatDate(updated_at)}
+            </div>
+          </div>
+        </footer>
+      </div>
     </article>
   );
 } 
