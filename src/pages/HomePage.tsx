@@ -1,9 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Wand2, Share2, Sparkles, Zap } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { signInWithGoogle } from '../lib/auth/supabase';
 
 export function HomePage() {
   const navigate = useNavigate();
+  const { user, isLoading } = useAuth();
+
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -18,13 +29,23 @@ export function HomePage() {
               Create engaging, SEO-optimized blog content in minutes. Let AI handle the writing while you focus on what matters most.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <button
-                onClick={() => navigate('/create')}
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Create Blog Post
-                <ArrowRight className="ml-2 h-4 w-4 inline" />
-              </button>
+              {!isLoading && (user ? (
+                <button
+                  onClick={() => navigate('/create')}
+                  className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Create Blog Post
+                  <ArrowRight className="ml-2 h-4 w-4 inline" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleLogin}
+                  className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Sign In to Get Started
+                  <ArrowRight className="ml-2 h-4 w-4 inline" />
+                </button>
+              ))}
               <button
                 onClick={() => navigate('/blog')}
                 className="text-sm font-semibold leading-6 text-white"
