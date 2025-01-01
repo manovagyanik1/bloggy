@@ -46,13 +46,7 @@ export async function getBlogById(req, res) {
     // Get blog with its project info
     const { data: blog, error } = await supabase
       .from('blog_posts')
-      .select(`
-        *,
-        projects:project_id (
-          id,
-          user_id
-        )
-      `)
+      .select('*')  
       .eq('id', id)
       .single();
 
@@ -60,13 +54,6 @@ export async function getBlogById(req, res) {
     if (!blog) {
       return res.status(404).json({ 
         error: 'Blog post not found' 
-      });
-    }
-
-    // Verify ownership
-    if (blog.projects.user_id !== user.id) {
-      return res.status(403).json({
-        error: 'Unauthorized: You do not own this blog post'
       });
     }
 

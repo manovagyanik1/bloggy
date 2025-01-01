@@ -43,10 +43,6 @@ CREATE TRIGGER set_blog_posts_updated_at
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies
-CREATE POLICY "Users can view their own blog posts" ON blog_posts
-  FOR SELECT USING (
-    author_id = auth.uid()
-  );
 
 CREATE POLICY "Users can insert their own blog posts" ON blog_posts
   FOR INSERT WITH CHECK (

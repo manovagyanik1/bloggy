@@ -60,10 +60,6 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
             <CalendarOutlined />
             {formatDate(created_at)}
           </span>
-          <span className="flex items-center gap-1">
-            <UserOutlined />
-            AI Generated
-          </span>
         </div>
 
         {seo_metadata.meta_description && (

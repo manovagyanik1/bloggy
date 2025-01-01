@@ -22,7 +22,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link 
-                  to="/blog" 
+                  to="/" 
                   onClick={handleClick}
                   className="text-gray-400 hover:text-gray-300"
                 >

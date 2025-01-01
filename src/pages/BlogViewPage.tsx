@@ -6,7 +6,7 @@ import { API_ROUTES } from '../lib/util/constants';
 import { message } from 'antd';
 
 export function BlogViewPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id, projectSlug } = useParams<{ id: string, projectSlug: string }>();
   const navigate = useNavigate();
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +14,7 @@ export function BlogViewPage() {
   useEffect(() => {
     async function fetchBlog() {
       if (!id) {
-        navigate('/blog');
+        navigate(`/projects/${projectSlug}/blogs`);
         return;
       }
 
@@ -32,7 +32,7 @@ export function BlogViewPage() {
       } catch (error) {
         console.error('Error fetching blog:', error);
         message.error('Failed to load blog post');
-        navigate('/blog');
+        navigate(`/projects/${projectSlug}/blogs`);
       } finally {
         setIsLoading(false);
       }

@@ -26,7 +26,7 @@ export function BlogCard({ blog }: BlogCardProps) {
   return (
     <Card
       hoverable
-      onClick={() => navigate(`/blog/${blog.id}`)}
+      onClick={() => navigate(`/projects/${projectSlug}/blogs/${blog.id}`)}
       className="h-full relative"
       cover={
         <div className="h-48 bg-gray-100 flex items-center justify-center">
