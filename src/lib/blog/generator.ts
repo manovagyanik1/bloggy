@@ -55,9 +55,16 @@ export async function finalizeBlog(content: string, project: Project): Promise<a
   
   const result = await callOpenAI(prompt);
   try {
-    return JSON.parse(result);
+    // Clean up the response to extract just the JSON part
+    const jsonStr = result
+      .replace(/```json\s*/, '')  // Remove opening ```json
+      .replace(/```\s*$/, '')     // Remove closing ```
+      .trim();                    // Remove any extra whitespace
+      
+    return JSON.parse(jsonStr);
   } catch (error) {
-    throw new Error('Failed to parse AI response for blog finalization');
+    console.error('AI Response:', result); // Log the raw response for debugging
+    throw new Error('Failed to parse AI response for blog finalization. Please try again.');
   }
 }
 

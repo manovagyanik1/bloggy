@@ -15,14 +15,14 @@ import { useProject } from '../lib/hooks/useProject';
 interface CreateBlogPostProps {
   initial_blog?: BlogPost;
   is_editing?: boolean;
-  projectId: string;
+  projectSlug: string;
 }
 
 export function CreateBlogPost({ 
   initial_blog, 
-  projectId 
+  projectSlug 
 }: CreateBlogPostProps) {
-  const { project } = useProject(projectId);
+  const { project } = useProject(projectSlug);
   const location = useLocation();
   const editData = location.state?.blogData;
   const [isLoading, setIsLoading] = useState(false);
@@ -63,6 +63,7 @@ export function CreateBlogPost({
         project
       });
       editorInstance?.commands.setContent(content);
+      setGeneratedContent(content);
       setFormData(values);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to generate content');
@@ -84,7 +85,9 @@ export function CreateBlogPost({
         editorInstance.getHTML(),
         { ...formData, project }
       );
-      editorInstance.commands.setContent(editorInstance.getHTML() + content);
+      const newContent = editorInstance.getHTML() + content;
+      editorInstance.commands.setContent(newContent);
+      setGeneratedContent(newContent);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to generate more content');
     } finally {
@@ -131,10 +134,10 @@ export function CreateBlogPost({
       const content = editorInstance.getHTML();
       
       if (editData?.id) {
-        await updateBlogPost(editData.id, content, seoMetadata, projectId);
+        await updateBlogPost(editData.id, content, seoMetadata, project!.id);
         alert('Blog post updated successfully!');
       } else {
-        await saveBlogPost(content, seoMetadata, projectId);
+        await saveBlogPost(content, seoMetadata, project!.id);
         alert('Blog post deployed successfully!');
       }
     } catch (error) {

@@ -33,7 +33,7 @@ export function CreateBlogPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <CreateBlogPost projectId={project.id} />
+      <CreateBlogPost projectSlug={project.slug} />
     </div>
   );
 } 
