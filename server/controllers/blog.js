@@ -14,6 +14,25 @@ async function verifyProjectOwnership(projectId, userId) {
   }
 }
 
+// Helper function to generate sitemap XML
+function generateSitemapXML(blogs, projectSlug) {
+  const baseUrl = process.env.SITE_URL || 'https://yourdomain.com';
+  
+  const urlElements = blogs.map(blog => `
+    <url>
+      <loc>${baseUrl}/projects/${projectSlug}/blogs/${blog.slug}</loc>
+      <lastmod>${new Date(blog.updated_at).toISOString()}</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>
+  `).join('');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      ${urlElements}
+    </urlset>`;
+}
+
 export async function getBlogsByProject(req, res) {
   try {
     const { projectId } = req.params;
@@ -182,6 +201,93 @@ export async function deleteBlogPost(req, res) {
   } catch (error) {
     console.error('Error deleting blog:', error);
     return res.status(error.message.includes('Unauthorized') ? 403 : 500).json({ 
+      error: error.message 
+    });
+  }
+}
+
+export async function getBlogBySlug(req, res) {
+  try {
+    const { projectId, slug } = req.params;
+
+    // Get blog by project_id and slug
+    const { data: blog, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('project_id', projectId)
+      .eq('slug', slug)
+      .single();
+
+    if (error) throw error;
+    if (!blog) {
+      return res.status(404).json({ 
+        error: 'Blog post not found' 
+      });
+    }
+
+    return res.json(blog);
+  } catch (error) {
+    console.error('Error fetching blog by slug:', error);
+    return res.status(500).json({ 
+      error: error.message 
+    });
+  }
+}
+
+export async function getProjectSitemap(req, res) {
+  try {
+    const { projectId } = req.params;
+    console.log('Generating sitemap for project:', projectId);
+
+    // First get project details
+    const { data: project, error: projectError } = await supabase
+      .from('projects')
+      .select('name, slug')
+      .eq('id', projectId)
+      .single();
+
+    if (projectError || !project) {
+      console.error('Project not found:', projectError);
+      return res.status(404).json({ 
+        error: 'Project not found' 
+      });
+    }
+
+    console.log('Found project:', project.name, 'with slug:', project.slug);
+
+    // Then get all blogs for the project
+    const { data: blogs, error } = await supabase
+      .from('blog_posts')
+      .select(`
+        slug,
+        updated_at
+      `)
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching blogs:', error);
+      throw error;
+    }
+
+    console.log('Found blogs:', blogs?.length || 0);
+
+    if (!blogs || blogs.length === 0) {
+      return res.status(404).json({ 
+        error: 'No blogs found for this project' 
+      });
+    }
+
+    // Generate sitemap XML using project slug
+    const sitemap = generateSitemapXML(blogs, project.slug);
+    console.log('Generated sitemap for', blogs.length, 'blogs');
+
+    // Set content type to XML
+    res.header('Content-Type', 'application/xml');
+    return res.send(sitemap);
+  } catch (error) {
+    console.error('Error generating sitemap:', error);
+    return res.status(500).json({ 
       error: error.message 
     });
   }
