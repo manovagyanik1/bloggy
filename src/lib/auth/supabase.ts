@@ -1,6 +1,6 @@
 import { supabase } from '../supabase';
 
-const SITE_URL = import.meta.env.VITE_SITE_URL || 'http://localhost:3000';
+const SITE_URL = import.meta.env.VITE_SITE_URL;
 
 export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
