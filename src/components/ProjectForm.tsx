@@ -1,184 +1,157 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { createProject, updateProject, getProjectBySlug } from '../lib/services/project';
-import { toast } from 'react-hot-toast';
-import { Project } from '../lib/types/project';
+import React from 'react';
+import { Form, Input, Button } from 'antd';
+import { CreateProjectInput } from '../lib/types/project';
+import { BlogTheme } from '../lib/types/theme';
 
-const THEMES = ['default', 'dark', 'light', 'modern', 'minimal'];
+const defaultTheme: BlogTheme = {
+  name: "clipy",
+  colors: {
+    primary: '#3b82f6',    // blue-500
+    secondary: '#60a5fa',   // blue-400
+    background: '#111827',  // gray-900
+    text: '#ffffff',
+  },
+  fonts: {
+    heading: 'font-sans text-4xl font-bold text-white',
+    subheading: 'font-sans text-2xl font-semibold text-white',
+    body: 'font-sans text-base text-gray-300',
+    caption: 'font-sans text-sm text-gray-400',
+  },
+  layout: {
+    container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
+    sectionSpacing: 'py-24',
+    imageSpacing: 'my-6',
+  }
+};
 
 interface ProjectFormProps {
-  mode?: 'create' | 'edit';
+  onSubmit: (values: CreateProjectInput) => void;
+  initialValues?: Partial<CreateProjectInput>;
+  isLoading?: boolean;
 }
 
-export function ProjectForm({ mode = 'create' }: ProjectFormProps) {
-  const navigate = useNavigate();
-  const { projectSlug } = useParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [project, setProject] = useState<Project | null>(null);
+export function ProjectForm({ onSubmit, initialValues, isLoading = false }: ProjectFormProps) {
+  const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (mode === 'edit' && projectSlug) {
-      loadProject();
-    }
-  }, [mode, projectSlug]);
-
-  const loadProject = async () => {
+  const validateThemeJson = (_: any, value: string) => {
     try {
-      const data = await getProjectBySlug(projectSlug!);
-      setProject(data);
-    } catch (error) {
-      console.error('Error loading project:', error);
-      toast.error('Failed to load project');
-      navigate('/projects');
-    }
-  };
+      const theme = JSON.parse(value);
+      const requiredKeys = ['name', 'colors', 'fonts', 'layout'];
+      const requiredColors = ['primary', 'secondary', 'background', 'text'];
+      const requiredFonts = ['heading', 'subheading', 'body', 'caption'];
+      const requiredLayout = ['container', 'sectionSpacing', 'imageSpacing'];
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const formData = new FormData(e.currentTarget);
-      const projectData = {
-        name: formData.get('name') as string,
-        slug: formData.get('slug') as string,
-        theme: formData.get('theme') as string,
-        description: formData.get('description') as string
-      };
-
-      if (mode === 'edit' && project) {
-        await updateProject(project.id, projectData);
-        toast.success('Project updated successfully!');
-      } else {
-        const newProject = await createProject(projectData);
-        toast.success('Project created successfully!');
-        navigate(`/projects/${newProject.slug}/settings`);
+      if (!requiredKeys.every(key => key in theme)) {
+        return Promise.reject('Theme must include: name, colors, fonts, and layout');
       }
-    } catch (error) {
-      console.error('Error saving project:', error);
-      toast.error(`Failed to ${mode} project`);
-    } finally {
-      setIsSubmitting(false);
+      if (!requiredColors.every(key => key in theme.colors)) {
+        return Promise.reject('Colors must include: primary, secondary, background, and text');
+      }
+      if (!requiredFonts.every(key => key in theme.fonts)) {
+        return Promise.reject('Fonts must include: heading, subheading, body, and caption');
+      }
+      if (!requiredLayout.every(key => key in theme.layout)) {
+        return Promise.reject('Layout must include: container, sectionSpacing, and imageSpacing');
+      }
+
+      return Promise.resolve();
+    } catch (e) {
+      return Promise.reject('Invalid JSON format');
     }
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (mode === 'edit') return; // Don't auto-generate slug in edit mode
-    
-    const name = e.target.value;
-    const slugInput = e.currentTarget.form?.querySelector<HTMLInputElement>('[name="slug"]');
-    if (slugInput) {
-      slugInput.value = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    }
+  const handleSubmit = (values: any) => {
+    const projectData = {
+      ...values,
+      theme: JSON.parse(values.theme)
+    };
+    onSubmit(projectData);
   };
 
   return (
-    <div className="space-y-8">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-300">
-            Project Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            required
-            onChange={handleNameChange}
-            defaultValue={project?.name}
-            className="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white"
-            placeholder="My Awesome Project"
-          />
-        </div>
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleSubmit}
+      initialValues={{
+        ...initialValues,
+        theme: initialValues?.theme ? JSON.stringify(initialValues.theme, null, 2) : JSON.stringify(defaultTheme, null, 2)
+      }}
+      className="max-w-2xl mx-auto"
+    >
+      <Form.Item
+        label="Project Name"
+        name="name"
+        rules={[
+          { required: true, message: 'Please enter a project name' },
+          { min: 3, message: 'Name must be at least 3 characters' }
+        ]}
+      >
+        <Input placeholder="My Awesome Project" />
+      </Form.Item>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300">
-            Project Slug
-          </label>
-          <input
-            type="text"
-            name="slug"
-            required
-            pattern="[a-z0-9-]+"
-            defaultValue={project?.slug}
-            readOnly={mode === 'edit'}
-            className={`mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white ${
-              mode === 'edit' ? 'opacity-50' : ''
-            }`}
-            placeholder="my-awesome-project"
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            URL-friendly name (lowercase letters, numbers, and hyphens only)
-            {mode === 'edit' && " - Cannot be changed"}
-          </p>
-        </div>
+      <Form.Item
+        label="URL Slug"
+        name="slug"
+        rules={[
+          { required: true, message: 'Please enter a URL slug' },
+          { pattern: /^[a-z0-9-]+$/, message: 'Slug can only contain lowercase letters, numbers, and hyphens' }
+        ]}
+        help="This will be used in your project's URL (e.g., myproject)"
+      >
+        <Input placeholder="my-project" />
+      </Form.Item>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300">
-            Theme
-          </label>
-          <select
-            name="theme"
-            defaultValue={project?.theme || 'default'}
-            className="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white"
-          >
-            {THEMES.map(theme => (
-              <option key={theme} value={theme}>
-                {theme.charAt(0).toUpperCase() + theme.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
+      <Form.Item
+        label="Project URL"
+        name="url"
+        rules={[
+          { required: true, message: 'Please enter your project URL' },
+          { type: 'url', message: 'Please enter a valid URL' }
+        ]}
+        help="The full URL where your blog will be hosted (e.g., https://myblog.com/blog)"
+      >
+        <Input placeholder="https://myblog.com/blog" />
+      </Form.Item>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300">
-            Description
-          </label>
-          <textarea
-            name="description"
-            rows={3}
-            defaultValue={project?.description || ''}
-            className="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white"
-            placeholder="Describe your project..."
-          />
-        </div>
+      <Form.Item
+        label="Description"
+        name="description"
+        rules={[
+          { max: 500, message: 'Description cannot be longer than 500 characters' }
+        ]}
+      >
+        <Input.TextArea 
+          placeholder="Describe your project..."
+          rows={4}
+        />
+      </Form.Item>
 
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-          >
-            {isSubmitting ? 
-              (mode === 'edit' ? 'Saving...' : 'Creating...') : 
-              (mode === 'edit' ? 'Save Changes' : 'Create Project')
-            }
-          </button>
+      <Form.Item
+        label="Theme Configuration"
+        name="theme"
+        rules={[
+          { required: true, message: 'Please enter theme configuration' },
+          { validator: validateThemeJson }
+        ]}
+        help="Enter your theme configuration in JSON format"
+      >
+        <Input.TextArea 
+          rows={10}
+          placeholder={JSON.stringify(defaultTheme, null, 2)}
+        />
+      </Form.Item>
 
-          {mode === 'edit' && projectSlug && (
-            <Link
-              to={`/projects/${projectSlug}/blogs`}
-              className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-            >
-              Go to Blogs
-            </Link>
-          )}
-        </div>
-      </form>
-
-      {mode === 'edit' && (
-        <div className="border-t border-gray-700 pt-6">
-          <h3 className="text-lg font-medium text-gray-200 mb-4">Project Actions</h3>
-          <div className="flex gap-4">
-            <Link
-              to={`/projects/${projectSlug}/blogs`}
-              className="flex-1 flex items-center justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-            >
-              <span className="mr-2">📝</span>
-              View Project Blogs
-            </Link>
-          </div>
-        </div>
-      )}
-    </div>
+      <Form.Item>
+        <Button 
+          type="primary" 
+          htmlType="submit"
+          loading={isLoading}
+          className="w-full"
+        >
+          {initialValues ? 'Update Project' : 'Create Project'}
+        </Button>
+      </Form.Item>
+    </Form>
   );
 } 

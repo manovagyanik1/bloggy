@@ -7,14 +7,16 @@ import { BlogPost } from '../lib/types/blog';
 import { Spin, Alert, message } from 'antd';
 import { formatDate } from '../lib/util/date';
 import { CalendarOutlined, UserOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { Project } from '../lib/types/project';
 
 interface BlogViewProps {
   blog: BlogPost;
+  project: Project;
   isLoading?: boolean;
   error?: string | null;
 }
 
-export function BlogView({ blog, isLoading = false, error = null }: BlogViewProps) {
+export function BlogView({ blog, project, isLoading = false, error = null }: BlogViewProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -47,6 +49,8 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
   }
 
   const { seo_metadata, content, created_at, updated_at } = blog;
+
+  const shareUrl = `${project.url}/${blog.slug}`;
 
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
@@ -95,7 +99,7 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
             <div className="mt-2 flex gap-4">
               <button 
                 onClick={() => window.open(
-                  `https://twitter.com/intent/tweet?text=${encodeURIComponent(seo_metadata.seo_title)}&url=${encodeURIComponent(window.location.href)}`,
+                  `https://twitter.com/intent/tweet?text=${encodeURIComponent(seo_metadata.seo_title)}&url=${encodeURIComponent(shareUrl)}`,
                   '_blank'
                 )}
                 className="text-gray-600 hover:text-gray-900"
@@ -104,7 +108,7 @@ export function BlogView({ blog, isLoading = false, error = null }: BlogViewProp
               </button>
               <button 
                 onClick={() => window.open(
-                  `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`,
+                  `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
                   '_blank'
                 )}
                 className="text-gray-600 hover:text-gray-900"

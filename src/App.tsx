@@ -20,7 +20,7 @@ import { ContactPage } from './pages/ContactPage';
 import { AuthCallback } from './pages/AuthCallback';
 import { ProfilePage } from './pages/ProfilePage';
 import { ProjectList } from './components/ProjectList';
-import { ProjectForm } from './components/ProjectForm';
+import { CreateProjectPage } from './pages/CreateProjectPage';
 
 const App = () => {
   return (
@@ -61,7 +61,7 @@ const App = () => {
                 path="/projects/new" 
                 element={
                   <ProtectedRoute>
-                    <ProjectForm />
+                    <CreateProjectPage />
                   </ProtectedRoute>
                 } 
               />
@@ -105,7 +105,7 @@ const App = () => {
                 path="/projects/:projectSlug/settings" 
                 element={
                   <ProtectedRoute>
-                    <ProjectForm mode="edit" />
+                    <CreateProjectPage mode="edit" />
                   </ProtectedRoute>
                 } 
               />

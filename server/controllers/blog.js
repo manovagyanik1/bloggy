@@ -15,12 +15,10 @@ async function verifyProjectOwnership(projectId, userId) {
 }
 
 // Helper function to generate sitemap XML
-function generateSitemapXML(blogs, projectSlug) {
-  const baseUrl = process.env.SITE_URL || 'https://yourdomain.com';
-  
+function generateSitemapXML(blogs, project) {
   const urlElements = blogs.map(blog => `
     <url>
-      <loc>${baseUrl}/projects/${projectSlug}/blogs/${blog.slug}</loc>
+      <loc>${project.url}/${blog.slug}</loc>
       <lastmod>${new Date(blog.updated_at).toISOString()}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
@@ -242,7 +240,7 @@ export async function getProjectSitemap(req, res) {
     // First get project details
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .select('name, slug')
+      .select('name, slug, url')
       .eq('id', projectId)
       .single();
 
@@ -252,8 +250,6 @@ export async function getProjectSitemap(req, res) {
         error: 'Project not found' 
       });
     }
-
-    console.log('Found project:', project.name, 'with slug:', project.slug);
 
     // Then get all blogs for the project
     const { data: blogs, error } = await supabase
@@ -270,16 +266,14 @@ export async function getProjectSitemap(req, res) {
       throw error;
     }
 
-    console.log('Found blogs:', blogs?.length || 0);
-
     if (!blogs || blogs.length === 0) {
       return res.status(404).json({ 
         error: 'No blogs found for this project' 
       });
     }
 
-    // Generate sitemap XML using project slug
-    const sitemap = generateSitemapXML(blogs, project.slug);
+    // Generate sitemap XML using project details
+    const sitemap = generateSitemapXML(blogs, project);
     console.log('Generated sitemap for', blogs.length, 'blogs');
 
     // Set content type to XML

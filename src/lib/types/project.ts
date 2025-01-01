@@ -1,10 +1,13 @@
+import { BlogTheme } from './theme';
+
 export interface Project {
   id: string;
   user_id: string;
   name: string;
   slug: string;
-  theme: string;
-  description: string | null;
+  url: string;
+  theme: BlogTheme;
+  description?: string;
   created_at: string;
   updated_at: string;
 }
@@ -12,6 +15,7 @@ export interface Project {
 export interface CreateProjectInput {
   name: string;
   slug: string;
-  theme: string;
+  url: string;
+  theme?: BlogTheme;
   description?: string;
 } 
