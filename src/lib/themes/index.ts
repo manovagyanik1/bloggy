@@ -1,14 +1,12 @@
 import { BlogTheme } from '../types/theme';
-import { defaultTheme } from './default';
-import { modernTheme } from './modern';
-import { clipyTheme } from './clipy';
+import { darkTheme } from './darkTheme';
+import { lightTheme } from './lightTheme';
 
 export const themes: Record<string, BlogTheme> = {
-  default: defaultTheme,
-  modern: modernTheme,
-  clipy: clipyTheme,
+  light: lightTheme,
+  dark: darkTheme,
 };
 
 export function getTheme(name: string = 'clipy'): BlogTheme {
-  return themes[name] || clipyTheme;
+  return themes[name] || darkTheme;
 }
