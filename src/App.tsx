@@ -15,6 +15,8 @@ import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
 import { CreateBlogPage } from './pages/CreateBlogPage';
 import { UpdateBlogPage } from './pages/UpdateBlogPage';
+import { CookiePolicyPage } from './pages/CookiePolicyPage';
+import { ContactPage } from './pages/ContactPage';
 
 const App = () => {
   return (
@@ -28,6 +30,8 @@ const App = () => {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/terms" element={<TermsPage />} />
+              <Route path="/cookies" element={<CookiePolicyPage />} />
+              <Route path="/contact" element={<ContactPage />} />
               
               {/* Protected Routes */}
               <Route 
