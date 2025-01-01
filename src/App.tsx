@@ -17,6 +17,7 @@ import { CreateBlogPage } from './pages/CreateBlogPage';
 import { UpdateBlogPage } from './pages/UpdateBlogPage';
 import { CookiePolicyPage } from './pages/CookiePolicyPage';
 import { ContactPage } from './pages/ContactPage';
+import { AuthCallback } from './pages/AuthCallback';
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/cookies" element={<CookiePolicyPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               
               {/* Protected Routes */}
               <Route 

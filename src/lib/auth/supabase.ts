@@ -1,9 +1,12 @@
 import { supabase } from '../supabase';
 
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'http://localhost:3000';
+
 export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
+      redirectTo: `${SITE_URL}/auth/callback`,
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
