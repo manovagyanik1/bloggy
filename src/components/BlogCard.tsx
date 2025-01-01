@@ -3,7 +3,7 @@ import { Card } from 'antd';
 import { CalendarOutlined, EditOutlined } from '@ant-design/icons';
 import { formatDate } from '../lib/util/date';
 import { BlogPost } from '../lib/types/blog';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface BlogCardProps {
   blog: BlogPost;
@@ -12,7 +12,7 @@ interface BlogCardProps {
 export function BlogCard({ blog }: BlogCardProps) {
   const navigate = useNavigate();
   const { content, created_at, seo_metadata } = blog;
-  
+  const { projectSlug } = useParams();
   // Get first paragraph of content for preview
   const previewText = content
     .replace(/<[^>]+>/g, '') // Remove HTML tags
@@ -20,7 +20,7 @@ export function BlogCard({ blog }: BlogCardProps) {
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/edit/${blog.id}`);
+    navigate(`/projects/${projectSlug}/blogs/${blog.id}/edit`);
   };
 
   return (
