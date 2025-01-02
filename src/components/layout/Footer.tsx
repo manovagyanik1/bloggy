@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import bloggyLogo from '/bloggy-logo.svg';
+import bloggyLogo from '/assets/bloggy-logo.svg';
 
 export function Footer() {
   const handleClick = () => {

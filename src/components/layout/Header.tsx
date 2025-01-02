@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { signInWithGoogle, signOut } from '../../lib/auth/supabase';
 import { Button, Drawer, Spin, Menu } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
-import bloggyLogo from '/bloggy-logo.svg';
+import bloggyLogo from '/assets/bloggy-logo.svg';
 
 export function Header() {
   const { user, isLoading } = useAuth();
