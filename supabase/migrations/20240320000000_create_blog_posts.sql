@@ -58,3 +58,10 @@ CREATE POLICY "Users can delete their own blog posts" ON blog_posts
   FOR DELETE USING (
     author_id = auth.uid()
   ); 
+
+-- alter table 
+alter table public.blog_posts 
+add constraint fk_project
+foreign key (project_id) 
+references public.projects(id)
+on delete cascade;

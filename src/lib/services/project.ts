@@ -33,6 +33,19 @@ export async function createProject(project: CreateProjectInput): Promise<Projec
   return data;
 }
 
+export async function getProjectById(id: string): Promise<Project> {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', id)
+      .single();
+  
+    if (error) throw error;
+    if (!data) throw new Error('Project not found');
+    
+    return data;
+  }
+
 export async function getProjectBySlug(slug: string): Promise<Project> {
   const { data, error } = await supabase
     .from('projects')

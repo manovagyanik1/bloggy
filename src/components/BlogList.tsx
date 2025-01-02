@@ -41,6 +41,10 @@ export function BlogList() {
     }
   };
 
+  const handleDelete = (blogId: string) => {
+    setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId));
+  };
+
   if (!projectSlug) {
     return <Navigate to="/projects" replace />;
   }
@@ -96,10 +100,7 @@ export function BlogList() {
           <Col xs={24} sm={12} md={8} lg={6} key={blog.id}>
             <BlogCard 
               blog={blog}
-              onClick={() => {
-                // Handle blog click - you can add navigation here
-                console.log('Blog clicked:', blog.seo_metadata.slug);
-              }}
+              onDelete={handleDelete}
             />
           </Col>
         ))}

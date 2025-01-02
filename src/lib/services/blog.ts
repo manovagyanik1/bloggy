@@ -74,7 +74,7 @@ export async function getBlogById(id: string): Promise<BlogPost> {
     .from('blog_posts')
     .select(`
       *,
-      projects:project_id (
+      projects (
         id,
         user_id
       )
@@ -84,4 +84,38 @@ export async function getBlogById(id: string): Promise<BlogPost> {
 
   if (error) throw error;
   return data;
+}
+
+export async function deleteBlogPost(blogId: string): Promise<void> {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error('Not authenticated');
+
+  // First verify ownership through project
+  const { data: blog, error: blogError } = await supabase
+    .from('blog_posts')
+    .select(`
+      id,
+      projects (
+        id,
+        user_id
+      )
+    `)
+    .eq('id', blogId)
+    .single();
+
+  if (blogError || !blog) {
+    throw new Error('Blog post not found');
+  }
+
+  if (blog.projects.user_id !== user.id) {
+    throw new Error('Unauthorized: You do not own this blog post');
+  }
+
+  // Then delete the blog post
+  const { error } = await supabase
+    .from('blog_posts')
+    .delete()
+    .eq('id', blogId);
+
+  if (error) throw error;
 } 
