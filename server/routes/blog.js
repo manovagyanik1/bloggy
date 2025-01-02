@@ -3,6 +3,7 @@ import {
   getBlogsByProject, 
   getBlogById, 
   getBlogBySlug,
+  getBlogWithProjectInfoBySlug,
   saveBlogPost, 
   updateBlogPost, 
   deleteBlogPost,
@@ -16,6 +17,7 @@ router.get('/project/:projectId', getBlogsByProject);
 router.get('/blog/:id', getBlogById);
 router.get('/project/:projectId/sitemap.xml', getProjectSitemap);
 router.get('/project/:projectId/slug/:slug', getBlogBySlug);
+router.get('/project/:projectId/blog/:slug', getBlogWithProjectInfoBySlug);
 router.post('/blog', saveBlogPost);
 router.put('/blog/:id', updateBlogPost);
 router.delete('/blog/:id', deleteBlogPost);

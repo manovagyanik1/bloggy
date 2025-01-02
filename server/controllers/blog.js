@@ -37,7 +37,7 @@ export async function getBlogsByProject(req, res) {
     const { user } = req;
 
     // Verify project ownership
-    await verifyProjectOwnership(projectId, user.id);
+    // await verifyProjectOwnership(projectId, user.id);
 
     const { data, error } = await supabase
       .from('blog_posts')
@@ -281,6 +281,53 @@ export async function getProjectSitemap(req, res) {
     return res.send(sitemap);
   } catch (error) {
     console.error('Error generating sitemap:', error);
+    return res.status(500).json({ 
+      error: error.message 
+    });
+  }
+}
+
+export async function getBlogWithProjectInfoBySlug(req, res) {
+  try {
+    const { projectId, slug } = req.params;
+
+    // First get the blog post
+    const { data: blog, error: blogError } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('project_id', projectId)
+      .eq('slug', slug)
+      .single();
+
+    if (blogError) throw blogError;
+    if (!blog) {
+      return res.status(404).json({ 
+        error: 'Blog post not found' 
+      });
+    }
+
+    // Then get the project info
+    const { data: project, error: projectError } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', projectId)
+      .single();
+
+    if (projectError) throw projectError;
+    if (!project) {
+      return res.status(404).json({ 
+        error: 'Project not found' 
+      });
+    }
+
+    // Return both blog and project info
+    return res.json({
+      blog: blog,
+      project: project
+    });
+
+  } catch (error) {
+    console.error('Error fetching blog with project info:', error);
     return res.status(500).json({ 
       error: error.message 
     });
