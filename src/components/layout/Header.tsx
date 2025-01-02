@@ -11,8 +11,8 @@ export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Check if we're in a project context
-  const projectMatch = location.pathname.match(/^\/projects\/([^\/]+)/);
+  // Update regex to exclude 'new' path
+  const projectMatch = location.pathname.match(/^\/projects\/(?!new\b)([^\/]+)/);
   const currentProject = projectMatch ? projectMatch[1] : null;
 
   const getMenuItems = () => {
