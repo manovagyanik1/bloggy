@@ -38,7 +38,7 @@ export function createInitialPrompt(params: PromptParams): string {
     
     Content Structure:
     - Create SEO-optimized headings
-    - Include these sections: ${params.generateSections.length > 0 ? params.generateSections.join(", ") : "Introduction, Main Content"}
+    - Include these sections: ${params.generateSections.length > 0 ? params.generateSections.join(", ") : "Introduction"}
     - Skip these sections: ${params.ignoreSections.join(", ")}
     
     Important:
