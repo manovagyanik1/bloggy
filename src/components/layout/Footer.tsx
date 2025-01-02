@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import bloggyLogo from '/bloggy-logo.svg';
 
 export function Footer() {
   const handleClick = () => {
@@ -11,7 +12,10 @@ export function Footer() {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-white font-bold mb-4">Bloggy</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <img src={bloggyLogo} alt="Bloggy Logo" className="w-6 h-6" />
+              <h3 className="text-white font-bold">Bloggy</h3>
+            </div>
             <p className="text-sm text-gray-400">
               Free AI-powered blog generator for everyone
             </p>

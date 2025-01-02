@@ -84,10 +84,10 @@ export function HomePage() {
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 {!isLoading && (user ? (
                   <button
-                    onClick={() => navigate('/create')}
+                    onClick={() => navigate('/projects/new')}
                     className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
-                    Create Blog Post
+                    Create new project
                     <ArrowRight className="ml-2 h-4 w-4 inline" />
                   </button>
                 ) : (
@@ -100,10 +100,10 @@ export function HomePage() {
                   </button>
                 ))}
                 <button
-                  onClick={() => navigate('/blog')}
+                  onClick={() => navigate('/projects')}
                   className="text-sm font-semibold leading-6 text-white"
                 >
-                  View Blog Posts <span aria-hidden="true">→</span>
+                  View all projects <span aria-hidden="true">→</span>
                 </button>
               </div>
             </div>
@@ -175,7 +175,7 @@ export function HomePage() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <button
-                onClick={() => navigate('/create')}
+                onClick={() => navigate('/projects/new')}
                 className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 Get started
