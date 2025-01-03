@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Settings, RefreshCw } from 'lucide-react';
 import { ImageDialog } from './ImageDialog';
-import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import { useEditor, EditorContent, BubbleMenu, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
 import { getTheme } from '../lib/themes';
 import { SEOMetadata, SEOMetadataForm } from './SEOMetadataForm';
+import { supabase } from '../lib/supabase';
 
 interface BlogContentProps {
   content: string;
@@ -43,7 +44,7 @@ function RegenerateDialog({ isOpen, onClose, onRegenerate, selectedText, isRegen
     <div className="fixed inset-0 bg-gray-900/75 transition-opacity">
       <div className="fixed inset-0 z-10 overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div 
+          <div
             className="relative transform overflow-hidden rounded-lg px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 border border-gray-700"
             style={{ backgroundColor: theme.colors.background }}
           >
@@ -111,7 +112,7 @@ interface FloatingButtonProps {
 
 function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
   const theme = getTheme();
-  
+
   if (!position) return null;
 
   return (
@@ -130,7 +131,7 @@ function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
           onRegenerate();
         }}
         className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
-        style={{ 
+        style={{
           backgroundColor: theme.colors.primary,
           color: theme.colors.background 
         }}
@@ -142,12 +143,12 @@ function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
   );
 }
 
-export function BlogContent({ 
-  content, 
-  onGenerateMore, 
-  isLoading, 
-  onContentChange, 
-  onRegenerateSection, 
+export function BlogContent({
+  content,
+  onGenerateMore,
+  isLoading,
+  onContentChange,
+  onRegenerateSection,
   onEditorReady,
   onFinalize,
 }: BlogContentProps) {
@@ -180,6 +181,7 @@ export function BlogContent({
   });
 
   const [seoMetadata, setSeoMetadata] = useState<SEOMetadata | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const theme = getTheme();
 
@@ -198,7 +200,8 @@ export function BlogContent({
     },
     onCreate: ({ editor }) => {
       onEditorReady?.(editor);
-    }
+    },
+    onTransaction: ({ editor }) => handleImageRemoval(editor),
   });
 
   const handleImageClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -219,7 +222,7 @@ export function BlogContent({
       reader.onload = (e) => {
         if (e.target?.result && editor) {
           editor.chain().focus()
-            .setImage({ 
+            .setImage({
               src: e.target.result as string,
               alt: imageDialog.description 
             })
@@ -268,49 +271,132 @@ export function BlogContent({
   }, [editor]);
 
   const handleRegenerate = useCallback(async (additionalPrompt: string) => {
-    if (regenerateDialog.range && editor && onRegenerateSection) {
-      try {
-        setRegenerationState({ isLoading: true, error: null });
-        
-        const range = regenerateDialog.range;
-        
-        // Get the parent nodes for context
-        const startNode = range.startContainer.parentNode;
-        const endNode = range.endContainer.parentNode;
-        
-        // Get preceding and succeeding content from the same level
-        const context = {
+      if (regenerateDialog.range && editor && onRegenerateSection) {
+        try {
+          setRegenerationState({ isLoading: true, error: null });
+
+          const range = regenerateDialog.range;
+
+          // Get the parent nodes for context
+          const startNode = range.startContainer.parentNode;
+          const endNode = range.endContainer.parentNode;
+
+          // Get preceding and succeeding content from the same level
+          const context = {
           preceding: startNode?.previousSibling?.textContent || '',
-          selected: regenerateDialog.selectedText,
+            selected: regenerateDialog.selectedText,
           succeeding: endNode?.nextSibling?.textContent || '',
           additionalPrompt
-        };
+          };
 
-        const newContent = await onRegenerateSection(context);
+          const newContent = await onRegenerateSection(context);
 
-        // Store current selection state
-        const from = editor.state.selection.from;
-        const to = editor.state.selection.to;
+          // Store current selection state
+          const from = editor.state.selection.from;
+          const to = editor.state.selection.to;
 
-        // Replace content at the current selection
-        editor
-          .chain()
-          .focus()
-          .deleteRange({ from, to }) // First delete the selected content
-          .insertContent(newContent) // Then insert the new content
-          .run();
+          // Replace content at the current selection
+          editor
+            .chain()
+            .focus()
+            .deleteRange({ from, to }) // First delete the selected content
+            .insertContent(newContent) // Then insert the new content
+            .run();
 
-        setRegenerationState({ isLoading: false, error: null });
-        setButtonPosition(null);
+          setRegenerationState({ isLoading: false, error: null });
+          setButtonPosition(null);
         setRegenerateDialog(prev => ({ ...prev, isOpen: false }));
-      } catch (error) {
-        setRegenerationState({ 
-          isLoading: false, 
+        } catch (error) {
+          setRegenerationState({
+            isLoading: false,
           error: error instanceof Error ? error.message : 'Failed to regenerate content'
-        });
+          });
+        }
+      }
+    }, [regenerateDialog.range, editor, regenerateDialog.selectedText, onRegenerateSection]);
+
+  const uploadToSupabase = async (file: any) => {
+    // Check if Supabase is initialized
+    if (!supabase) {
+      console.error("Supabase is not initialized. Cannot upload the image.");
+      return null;
+    }
+
+    const fileName = `${Date.now()}-slug`;
+    const { data, error } = await supabase.storage
+      .from("images") // Replace with your bucket name
+      .upload(fileName, file);
+
+    if (error) {
+      console.log(data);
+      console.error("Error uploading image:", error);
+      return null;
+    }
+    setUploadedImages((prev) => [...prev, fileName]);
+    return supabase.storage.from("images").getPublicUrl(fileName).data
+      .publicUrl;
+  };
+
+  const removeFromSupabase = async (fileName: string) => {
+    if (!supabase) {
+      console.error("Supabase is not initialized. Cannot remove the image.");
+      return;
+    }
+
+    const { error } = await supabase.storage.from("images").remove([fileName]);
+
+    if (error) {
+      console.error("Error removing image:", error);
+    }
+  };
+
+  const handleImageRemoval = (editor: Editor) => {
+    // Get current images in the editor
+    const currentImages =
+      editor
+        .getJSON()
+        .content?.filter((node) => node.type === "image")
+        ?.map((node) => node.attrs?.src) || [];
+
+        console.log(currentImages);
+
+    // Identify removed images by comparing with uploadedImages
+    const removedImages = uploadedImages.filter(
+      (fileName) => !currentImages.some((url) => url.includes(fileName))
+    );
+    // Remove them from Supabase
+    removedImages.forEach(async (fileName) => {
+      await removeFromSupabase(fileName);
+    });
+
+    // Update the state with the remaining images
+    const remainingImages = currentImages
+      .map((url) => url.split("/").pop())
+      .filter((fileName): fileName is string => fileName !== undefined);
+
+    setUploadedImages(remainingImages);
+  };
+
+  const handlePaste = async (event: any) => {
+    console.log("image pasted");
+    if (!editor) return;
+    const items = event.clipboardData.items;
+    for (let item of items) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        if (file) {
+          event.preventDefault();
+
+          // Upload to Supabase and insert the URL
+          const imageUrl = await uploadToSupabase(file);
+          if (imageUrl) {
+            editor.chain().focus().setImage({ src: imageUrl }).run();
+          }
+        }
+        break;
       }
     }
-  }, [regenerateDialog.range, editor, regenerateDialog.selectedText, onRegenerateSection]);
+  };
 
   useEffect(() => {
     if (regenerationState.error) {
@@ -335,18 +421,19 @@ export function BlogContent({
       <div className="shadow-xl rounded-lg relative border border-gray-700" 
            style={{ backgroundColor: theme.colors.background }}>
         <div className="px-4 py-5 sm:p-6">
-          <h2 className={`text-lg font-medium mb-4 ${theme.fonts.heading}`} 
+          <h2 className={`text-lg font-medium mb-4 ${theme.fonts.heading}`}
               style={{ color: theme.colors.text }}>
             Generated Blog Content
           </h2>
           <div className="relative">
-            <div onClick={handleImageClick} 
-                 className="prose prose-invert max-w-none"
-                 style={{ backgroundColor: theme.colors.background }}>
+            <div onClick={handleImageClick}
+              onPaste={handlePaste}
+              className="prose prose-invert max-w-none"
+              style={{ backgroundColor: theme.colors.background }}>
               {editor && (
                 <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
                   <div className="flex gap-1 p-1 rounded-lg shadow-lg border border-gray-700"
-                       style={{ backgroundColor: theme.colors.background }}>
+                    style={{ backgroundColor: theme.colors.background }}>
                     <button
                       onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                       className={`p-1 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
@@ -421,7 +508,7 @@ export function BlogContent({
               disabled={isLoading}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50"
               style={{ backgroundColor: theme.colors.secondary, color: theme.colors.background }}
-            >
+              >
               {isLoading ? (
                 <>
                   <Settings className="animate-spin -ml-1 mr-2 h-4 w-4" />
