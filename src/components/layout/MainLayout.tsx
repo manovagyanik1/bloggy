@@ -13,10 +13,8 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <Layout className="min-h-screen">
       <Header />
-      <Content className="flex-grow bg-gray-50">
-        {children}
-      </Content>
+      <Content className="flex-grow bg-gray-50">{children}</Content>
       <Footer />
     </Layout>
   );
-} 
+}

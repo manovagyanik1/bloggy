@@ -45,19 +45,14 @@ export function TermsPage() {
 
           <div className="grid gap-8 mb-16">
             {sections.map((section, index) => (
-              <div
-                key={index}
-                className="bg-white p-8 rounded-xl shadow-sm border border-gray-100"
-              >
+              <div key={index} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                 <div className="flex items-center mb-4">
                   {section.icon}
                   <Title level={2} className="ml-4 !mb-0">
                     {section.title}
                   </Title>
                 </div>
-                <Paragraph className="text-gray-600 text-lg">
-                  {section.content}
-                </Paragraph>
+                <Paragraph className="text-gray-600 text-lg">{section.content}</Paragraph>
               </div>
             ))}
           </div>
@@ -76,9 +71,9 @@ export function TermsPage() {
             <div>
               <Title level={2}>Service Modifications</Title>
               <Paragraph className="text-gray-600">
-                We reserve the right to modify or discontinue any part of our service 
-                with or without notice. We shall not be liable to you or any third 
-                party for any modification, suspension, or discontinuance of the service.
+                We reserve the right to modify or discontinue any part of our service with or
+                without notice. We shall not be liable to you or any third party for any
+                modification, suspension, or discontinuance of the service.
               </Paragraph>
             </div>
 
@@ -86,10 +81,7 @@ export function TermsPage() {
               <Title level={2}>Contact</Title>
               <Paragraph className="text-gray-600">
                 Questions about these Terms should be sent to{' '}
-                <a
-                  href="mailto:legal@bloggy.ai"
-                  className="text-indigo-600 hover:text-indigo-500"
-                >
+                <a href="mailto:legal@bloggy.ai" className="text-indigo-600 hover:text-indigo-500">
                   legal@bloggy.ai
                 </a>
               </Paragraph>
@@ -99,4 +91,4 @@ export function TermsPage() {
       </div>
     </div>
   );
-} 
+}

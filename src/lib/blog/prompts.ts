@@ -33,27 +33,29 @@ export function createInitialPrompt(params: PromptParams): string {
     
     Requirements:
     - Title: ${params.title}
-    - SEO Keywords: ${params.seoKeywords.join(", ")}
+    - SEO Keywords: ${params.seoKeywords.join(', ')}
     - Word Count: 2000-4000 words
     
     Content Structure:
     - Create SEO-optimized headings
-    - Include these sections: ${params.generateSections.length > 0 ? params.generateSections.join(", ") : "Introduction"}
-    - Skip these sections: ${params.ignoreSections.join(", ")}
+    - Include these sections: ${params.generateSections.length > 0 ? params.generateSections.join(', ') : 'Introduction'}
+    - Skip these sections: ${params.ignoreSections.join(', ')}
     
     Important:
     - Make the content comprehensive and detailed
     - Aim for the higher end of the word count range
     
-    ${params.customPrompt ? `Special Instructions: ${params.customPrompt}` : ""}
+    ${params.customPrompt ? `Special Instructions: ${params.customPrompt}` : ''}
     
     Return only the clean HTML content.
   `;
 }
 
-export function createContinuationPrompt(params: PromptParams & {
-  previousContent: string;
-}): string {
+export function createContinuationPrompt(
+  params: PromptParams & {
+    previousContent: string;
+  }
+): string {
   const preparedContext = `Learn about website ${params.project.name} url: ${params.project.url} ${params.project.description}`;
 
   return `
@@ -75,14 +77,14 @@ export function createContinuationPrompt(params: PromptParams & {
     
     Context:
     - Title: ${params.title}
-    - SEO Keywords: ${params.seoKeywords.join(", ")}
+    - SEO Keywords: ${params.seoKeywords.join(', ')}
     - Previous content: ${params.previousContent}
     
     Content Structure:
     - Continue naturally from the previous content
     - Maintain consistent heading hierarchy
-    - Include these sections if not covered: ${params.generateSections.length > 0 ? params.generateSections.join(", ") : "continue with relevant sections"}
-    - Skip these sections: ${params.ignoreSections.join(", ")}
+    - Include these sections if not covered: ${params.generateSections.length > 0 ? params.generateSections.join(', ') : 'continue with relevant sections'}
+    - Skip these sections: ${params.ignoreSections.join(', ')}
     
     Important:
     - Make the content comprehensive and detailed
@@ -91,7 +93,7 @@ export function createContinuationPrompt(params: PromptParams & {
     - Ensure smooth transition from previous content
     - Use SEO keywords naturally throughout the text
     
-    ${params.customPrompt ? `Special Instructions: ${params.customPrompt}` : ""}
+    ${params.customPrompt ? `Special Instructions: ${params.customPrompt}` : ''}
     
     Return only the clean HTML content without any markdown or code blocks.
     Do not repeat content that was already covered.

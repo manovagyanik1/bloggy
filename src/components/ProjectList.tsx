@@ -2,15 +2,15 @@ import React from 'react';
 import { List, Card, Button, Modal, Typography, Space } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { Project } from '../lib/types/project';
-import { 
-  DeleteOutlined, 
-  EditOutlined, 
+import {
+  DeleteOutlined,
+  EditOutlined,
   ExclamationCircleOutlined,
   GlobalOutlined,
   ProjectOutlined,
   ClockCircleOutlined,
   PlusOutlined,
-  EyeOutlined
+  EyeOutlined,
 } from '@ant-design/icons';
 import { formatDate } from '../lib/util/date';
 
@@ -44,7 +44,8 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
     confirm({
       title: 'Are you sure you want to delete this project?',
       icon: <ExclamationCircleOutlined />,
-      content: 'This will permanently delete the project and all its blog posts. This action cannot be undone.',
+      content:
+        'This will permanently delete the project and all its blog posts. This action cannot be undone.',
       okText: 'Yes, Delete',
       okType: 'danger',
       cancelText: 'No, Cancel',
@@ -69,19 +70,19 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
           </Link>
         </Space>
       </div>
-      
+
       <List
         grid={{ gutter: [24, 24], xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 4 }}
         dataSource={projects}
         loading={isLoading}
-        renderItem={(project) => (
+        renderItem={project => (
           <List.Item>
-            <Card 
+            <Card
               hoverable
               className="h-full flex flex-col shadow-md cursor-pointer"
               headStyle={{ borderBottom: '2px solid #f0f0f0' }}
               title={
-                <div 
+                <div
                   className="flex items-center justify-between py-2"
                   onClick={() => handleViewProject(project)}
                 >
@@ -91,28 +92,15 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
                 </div>
               }
               actions={[
-                <Button 
-                  type="link" 
-                  key="view"
-                  onClick={() => handleViewProject(project)}
-                >
+                <Button type="link" key="view" onClick={() => handleViewProject(project)}>
                   <EyeOutlined /> View Blogs
                 </Button>,
-                <Button 
-                  type="link"
-                  key="edit"
-                  onClick={(e) => handleEdit(e, project)}
-                >
+                <Button type="link" key="edit" onClick={e => handleEdit(e, project)}>
                   <EditOutlined /> Edit
                 </Button>,
-                <Button 
-                  type="text" 
-                  danger 
-                  onClick={(e) => handleDelete(e, project)}
-                  key="delete"
-                >
+                <Button type="text" danger onClick={e => handleDelete(e, project)} key="delete">
                   <DeleteOutlined /> Delete
-                </Button>
+                </Button>,
               ]}
               onClick={() => handleViewProject(project)}
             >
@@ -122,7 +110,7 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
                     {project.description}
                   </Text>
                 )}
-                
+
                 <div className="space-y-3" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center text-gray-500 hover:text-gray-700">
                     <GlobalOutlined className="mr-2 text-blue-500" />
@@ -130,12 +118,10 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
                       {project.url}
                     </Text>
                   </div>
-                  
+
                   <div className="flex items-center text-gray-500">
                     <ClockCircleOutlined className="mr-2 text-green-500" />
-                    <Text className="text-sm">
-                      Created: {formatDate(project.created_at)}
-                    </Text>
+                    <Text className="text-sm">Created: {formatDate(project.created_at)}</Text>
                   </div>
                 </div>
               </div>
@@ -145,4 +131,4 @@ export function ProjectList({ projects, onDelete, isLoading = false }: ProjectLi
       />
     </div>
   );
-} 
+}

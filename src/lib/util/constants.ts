@@ -6,8 +6,8 @@ export const API_CONFIG = {
     BLOGS: {
       LIST: (projectId: string) => `/blog/project/${projectId}`,
       GET: (id: string) => `/blog/${id}`,
-    }
-  }
+    },
+  },
 } as const;
 
 export const getApiUrl = (path: string) => {
@@ -15,8 +15,6 @@ export const getApiUrl = (path: string) => {
 };
 
 export const API_ROUTES = {
-  GET_PROJECT_BLOGS: (projectId: string) => 
-    getApiUrl(API_CONFIG.ENDPOINTS.BLOGS.LIST(projectId)),
-  GET_BLOG_BY_ID: (id: string) => 
-    getApiUrl(API_CONFIG.ENDPOINTS.BLOGS.GET(id))
-} as const; 
+  GET_PROJECT_BLOGS: (projectId: string) => getApiUrl(API_CONFIG.ENDPOINTS.BLOGS.LIST(projectId)),
+  GET_BLOG_BY_ID: (id: string) => getApiUrl(API_CONFIG.ENDPOINTS.BLOGS.GET(id)),
+} as const;

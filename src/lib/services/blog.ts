@@ -3,26 +3,31 @@ import { supabase } from '../supabase';
 import { BlogPost } from '../types/blog';
 
 export async function saveBlogPost(
-  content: string, 
-  metadata: SEOMetadata, 
+  content: string,
+  metadata: SEOMetadata,
   projectId: string
 ): Promise<BlogPost> {
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) throw new Error('Not authenticated');
 
   const slug = metadata.slug || metadata.title.toLowerCase().replace(/\s+/g, '-');
 
   const { data, error } = await supabase
     .from('blog_posts')
-    .insert([{
-      content,
-      seo_metadata: metadata,
-      project_id: projectId,
-      author_id: user.id,
-      slug,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }])
+    .insert([
+      {
+        content,
+        seo_metadata: metadata,
+        project_id: projectId,
+        author_id: user.id,
+        slug,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ])
     .select()
     .single();
 
@@ -36,7 +41,10 @@ export async function updateBlogPost(
   metadata: SEOMetadata,
   projectId: string
 ): Promise<BlogPost> {
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) throw new Error('Not authenticated');
 
   const slug = metadata.slug || metadata.title.toLowerCase().replace(/\s+/g, '-');
@@ -47,7 +55,7 @@ export async function updateBlogPost(
       content,
       seo_metadata: metadata,
       slug,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('id', id)
     .eq('project_id', projectId)
@@ -72,13 +80,15 @@ export async function getBlogsByProject(projectId: string): Promise<BlogPost[]> 
 export async function getBlogById(id: string): Promise<BlogPost> {
   const { data, error } = await supabase
     .from('blog_posts')
-    .select(`
+    .select(
+      `
       *,
       projects (
         id,
         user_id
       )
-    `)
+    `
+    )
     .eq('id', id)
     .single();
 
@@ -87,19 +97,24 @@ export async function getBlogById(id: string): Promise<BlogPost> {
 }
 
 export async function deleteBlogPost(blogId: string): Promise<void> {
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) throw new Error('Not authenticated');
 
   // First verify ownership through project
   const { data: blog, error: blogError } = await supabase
     .from('blog_posts')
-    .select(`
+    .select(
+      `
       id,
       projects (
         id,
         user_id
       )
-    `)
+    `
+    )
     .eq('id', blogId)
     .single();
 
@@ -112,10 +127,7 @@ export async function deleteBlogPost(blogId: string): Promise<void> {
   }
 
   // Then delete the blog post
-  const { error } = await supabase
-    .from('blog_posts')
-    .delete()
-    .eq('id', blogId);
+  const { error } = await supabase.from('blog_posts').delete().eq('id', blogId);
 
   if (error) throw error;
-} 
+}

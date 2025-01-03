@@ -29,4 +29,4 @@ export function useProject(projectSlug: string | undefined) {
   };
 
   return { project, isLoading, error };
-} 
+}

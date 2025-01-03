@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CreateBlogPost } from '../components/CreateBlogPost';
 import { Navigate, useParams } from 'react-router-dom';
 import { BlogPost } from '../lib/types/blog';
@@ -16,21 +16,15 @@ export function UpdateBlogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (id && user && project) {
-      fetchBlog();
-    }
-  }, [id, user, project]);
-
-  const fetchBlog = async () => {
+  const fetchBlog = useCallback(async () => {
     try {
       const data = await getBlogById(id!);
-      
+
       // Verify ownership
       if (data.projects?.user_id !== user?.id) {
         throw new Error('Unauthorized: You do not own this blog post');
       }
-      
+
       setBlog(data);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An error occurred';
@@ -39,7 +33,13 @@ export function UpdateBlogPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id, user, project]);
+
+  useEffect(() => {
+    if (id && user && project) {
+      fetchBlog();
+    }
+  }, [id, user, project, fetchBlog]);
 
   if (!projectSlug || !id) {
     return <Navigate to="/projects" replace />;
@@ -66,11 +66,7 @@ export function UpdateBlogPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <CreateBlogPost 
-        initial_blog={blog}
-        is_editing={true}
-        projectId={project.id}
-      />
+      <CreateBlogPost initial_blog={blog} is_editing={true} projectSlug={projectSlug} />
     </div>
   );
-} 
+}

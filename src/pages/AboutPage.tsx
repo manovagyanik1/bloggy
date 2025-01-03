@@ -9,15 +9,17 @@ export function AboutPage() {
       <Title level={1}>About Bloggy</Title>
       <div className="max-w-3xl">
         <Paragraph>
-          Bloggy is a free AI-powered blog generator that helps you create engaging, 
-          SEO-optimized content in minutes. Whether you're a content creator, marketer, 
-          or business owner, Bloggy streamlines your content creation process.
+          Bloggy is a free AI-powered blog generator that helps you create engaging, SEO-optimized
+          content in minutes. Whether you're a content creator, marketer, or business owner, Bloggy
+          streamlines your content creation process.
         </Paragraph>
         <Paragraph>
-          Our mission is to democratize content creation by making professional blog writing 
+          Our mission is to democratize content creation by making professional blog writing
           accessible to everyone through the power of artificial intelligence.
         </Paragraph>
-        <Title level={2} className="mt-8">Our Features</Title>
+        <Title level={2} className="mt-8">
+          Our Features
+        </Title>
         <ul className="list-disc pl-6 space-y-4">
           <li>AI-powered blog generation with customizable themes</li>
           <li>SEO optimization tools and metadata management</li>
@@ -28,4 +30,4 @@ export function AboutPage() {
       </div>
     </div>
   );
-} 
+}

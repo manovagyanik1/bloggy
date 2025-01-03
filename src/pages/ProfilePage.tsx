@@ -71,18 +71,14 @@ export function ProfilePage() {
             className="h-16 w-16 rounded-full"
           />
           <div>
-            <h1 className="text-3xl font-bold text-white">
-              {profile?.full_name}
-            </h1>
+            <h1 className="text-3xl font-bold text-white">{profile?.full_name}</h1>
             <p className="text-gray-400">{profile?.email}</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300">
-              Bio
-            </label>
+            <label className="block text-sm font-medium text-gray-300">Bio</label>
             <textarea
               name="bio"
               rows={3}
@@ -93,9 +89,7 @@ export function ProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300">
-              Website
-            </label>
+            <label className="block text-sm font-medium text-gray-300">Website</label>
             <input
               type="url"
               name="website"
@@ -106,9 +100,7 @@ export function ProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300">
-              Company
-            </label>
+            <label className="block text-sm font-medium text-gray-300">Company</label>
             <input
               type="text"
               name="company"
@@ -119,9 +111,7 @@ export function ProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300">
-              Location
-            </label>
+            <label className="block text-sm font-medium text-gray-300">Location</label>
             <input
               type="text"
               name="location"
@@ -144,4 +134,4 @@ export function ProfilePage() {
       </div>
     </div>
   );
-} 
+}

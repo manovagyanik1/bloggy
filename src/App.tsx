@@ -39,77 +39,77 @@ const App = () => {
                   <Route path="/cookies" element={<CookiePolicyPage />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
-                  
+
                   {/* Protected Routes */}
-                  <Route 
-                    path="/profile" 
+                  <Route
+                    path="/profile"
                     element={
                       <ProtectedRoute>
                         <ProfilePage />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
 
                   {/* Project Routes */}
-                  <Route 
-                    path="/projects" 
+                  <Route
+                    path="/projects"
                     element={
                       <ProtectedRoute>
                         <ProjectsPage />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/projects/new" 
+                  <Route
+                    path="/projects/new"
                     element={
                       <ProtectedRoute>
                         <CreateProjectPage />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
 
                   {/* Blog Routes - Now nested under projects with 'blogs' plural */}
-                  <Route 
-                    path="/projects/:projectSlug/blogs" 
+                  <Route
+                    path="/projects/:projectSlug/blogs"
                     element={
                       <ProtectedRoute>
                         <BlogList />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/projects/:projectSlug/blogs/create" 
+                  <Route
+                    path="/projects/:projectSlug/blogs/create"
                     element={
                       <ProtectedRoute>
                         <CreateBlogPage />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/projects/:projectSlug/blogs/:id" 
+                  <Route
+                    path="/projects/:projectSlug/blogs/:id"
                     element={
                       <ProtectedRoute>
                         <BlogViewPage />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/projects/:projectSlug/blogs/:id/edit" 
+                  <Route
+                    path="/projects/:projectSlug/blogs/:id/edit"
                     element={
                       <ProtectedRoute>
                         <UpdateBlogPage />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
 
                   {/* Project Settings Route */}
-                  <Route 
-                    path="/projects/:projectSlug/settings" 
+                  <Route
+                    path="/projects/:projectSlug/settings"
                     element={
                       <ProtectedRoute>
                         <CreateProjectPage mode="edit" />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
                 </Routes>
               </MainLayout>

@@ -39,7 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
     // Listen for auth changes
-    const { data: { subscription } } = onAuthStateChange((session) => {
+    const {
+      data: { subscription },
+    } = onAuthStateChange(session => {
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
@@ -61,4 +63,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext); 
+export const useAuth = () => useContext(AuthContext);

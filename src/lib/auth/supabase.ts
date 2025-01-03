@@ -1,3 +1,4 @@
+import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL;
@@ -10,8 +11,8 @@ export async function signInWithGoogle() {
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
-      }
-    }
+      },
+    },
   });
 
   if (error) {
@@ -34,8 +35,10 @@ export function getSession() {
   return supabase.auth.getSession();
 }
 
-export function onAuthStateChange(callback: (session: any) => void) {
-  return supabase.auth.onAuthStateChange((event, session) => {
-    callback(session);
+export function onAuthStateChange(callback: (session: Session) => void) {
+  return supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      callback(session);
+    }
   });
-} 
+}

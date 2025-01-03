@@ -16,14 +16,14 @@ export function ImageDialog({ isOpen, onClose, description, onImageUpload }: Ima
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragActive(e.type === "dragenter" || e.type === "dragover");
+    setDragActive(e.type === 'dragenter' || e.type === 'dragover');
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files?.[0]) {
       onImageUpload(e.dataTransfer.files[0]);
     }
@@ -44,7 +44,7 @@ export function ImageDialog({ isOpen, onClose, description, onImageUpload }: Ima
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Suggested Image</h4>
           <p className="text-sm text-gray-600">{description}</p>
@@ -60,9 +60,7 @@ export function ImageDialog({ isOpen, onClose, description, onImageUpload }: Ima
           onDrop={handleDrop}
         >
           <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-sm text-gray-600">
-            Drag and drop an image, or click to select
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Drag and drop an image, or click to select</p>
           <input
             type="file"
             accept="image/*"

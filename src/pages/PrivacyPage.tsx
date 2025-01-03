@@ -5,13 +5,13 @@ export function PrivacyPage() {
     <div className="min-h-screen bg-gray-900 py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-white mb-8">Privacy Policy</h1>
-        
+
         <div className="prose prose-invert max-w-none">
           <p>Last updated: March 21, 2024</p>
 
           <h2>Introduction</h2>
           <p>
-            At Bloggy, we take your privacy seriously. This Privacy Policy explains how we collect, 
+            At Bloggy, we take your privacy seriously. This Privacy Policy explains how we collect,
             use, disclose, and safeguard your information when you use our website and services.
           </p>
 
@@ -44,13 +44,13 @@ export function PrivacyPage() {
 
           <h2>Data Security</h2>
           <p>
-            We implement appropriate technical and organizational security measures to protect your 
-            personal information. However, no method of transmission over the Internet is 100% secure.
+            We implement appropriate technical and organizational security measures to protect your
+            personal information. However, no method of transmission over the Internet is 100%
+            secure.
           </p>
 
           <h2>Third-Party Services</h2>
-          <p>
-            We may use third-party services for:</p>
+          <p>We may use third-party services for:</p>
           <ul>
             <li>Analytics (Google Analytics)</li>
             <li>Payment processing (Stripe)</li>
@@ -79,4 +79,4 @@ export function PrivacyPage() {
       </div>
     </div>
   );
-} 
+}

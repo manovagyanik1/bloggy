@@ -31,7 +31,7 @@ export interface BlogTheme {
       a: string;
       img: string;
       hr: string;
-    }
+    };
   };
   layout: {
     container: string;

@@ -21,9 +21,10 @@ export function BlogCard({ blog, onDelete }: BlogCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Get first paragraph of content for preview
-  const previewText = content
-    .replace(/<[^>]+>/g, '') // Remove HTML tags
-    .slice(0, 200) + '...';  // Get first 200 chars
+  const previewText =
+    content
+      .replace(/<[^>]+>/g, '') // Remove HTML tags
+      .slice(0, 200) + '...'; // Get first 200 chars
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,7 +56,7 @@ export function BlogCard({ blog, onDelete }: BlogCardProps) {
   };
 
   return (
-    <Card 
+    <Card
       hoverable
       onClick={() => navigate(`/projects/${projectSlug}/blogs/${blog.id}`)}
       className="h-full relative"
@@ -102,4 +103,4 @@ export function BlogCard({ blog, onDelete }: BlogCardProps) {
       />
     </Card>
   );
-} 
+}

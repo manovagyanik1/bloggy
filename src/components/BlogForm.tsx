@@ -12,7 +12,7 @@ export interface BlogFormData {
   seoKeywords: string[];
   ignoreSections: string[];
   generateSections: string[];
-  apiProvider: "openai" | "claude";
+  apiProvider: 'openai' | 'claude';
   customPrompt: string;
   themeName: string;
 }
@@ -38,14 +38,12 @@ function TagInput({ label, value, onChange, onAdd, placeholder, tags, onRemove }
 
   return (
     <div>
-      <label className="block text-sm font-medium text-indigo-300">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-indigo-300">{label}</label>
       <div className="mt-1 flex space-x-2">
         <input
           type="text"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={e => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           className="block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           placeholder={placeholder || `Add ${label.toLowerCase()} and press Enter`}
@@ -81,18 +79,18 @@ function TagInput({ label, value, onChange, onAdd, placeholder, tags, onRemove }
 
 export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
   const [formData, setFormData] = useState<BlogFormData>({
-    title: "What makes clipy so powerful",
+    title: 'What makes clipy so powerful',
     seoKeywords: [],
     ignoreSections: [],
     generateSections: [],
-    apiProvider: "openai",
-    customPrompt: "",
-    themeName: "modern",
+    apiProvider: 'openai',
+    customPrompt: '',
+    themeName: 'modern',
   });
 
-  const [keyword, setKeyword] = useState("");
-  const [section, setSection] = useState("");
-  const [ignoreSection, setIgnoreSection] = useState("");
+  const [keyword, setKeyword] = useState('');
+  const [section, setSection] = useState('');
+  const [ignoreSection, setIgnoreSection] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -113,9 +111,9 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
     if (keyword && !formData.seoKeywords.includes(keyword)) {
       setFormData(prev => ({
         ...prev,
-        seoKeywords: [...prev.seoKeywords, keyword]
+        seoKeywords: [...prev.seoKeywords, keyword],
       }));
-      setKeyword("");
+      setKeyword('');
     }
   };
 
@@ -123,9 +121,9 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
     if (section && !formData.generateSections.includes(section)) {
       setFormData(prev => ({
         ...prev,
-        generateSections: [...prev.generateSections, section]
+        generateSections: [...prev.generateSections, section],
       }));
-      setSection("");
+      setSection('');
     }
   };
 
@@ -133,9 +131,9 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
     if (ignoreSection && !formData.ignoreSections.includes(ignoreSection)) {
       setFormData(prev => ({
         ...prev,
-        ignoreSections: [...prev.ignoreSections, ignoreSection]
+        ignoreSections: [...prev.ignoreSections, ignoreSection],
       }));
-      setIgnoreSection("");
+      setIgnoreSection('');
     }
   };
 
@@ -152,7 +150,7 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
               name="title"
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             />
           </div>
@@ -164,10 +162,10 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
           onChange={setKeyword}
           onAdd={addKeyword}
           tags={formData.seoKeywords}
-          onRemove={(index) => 
+          onRemove={index =>
             setFormData(prev => ({
               ...prev,
-              seoKeywords: prev.seoKeywords.filter((_, i) => i !== index)
+              seoKeywords: prev.seoKeywords.filter((_, i) => i !== index),
             }))
           }
         />
@@ -178,10 +176,10 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
           onChange={setSection}
           onAdd={addSection}
           tags={formData.generateSections}
-          onRemove={(index) => 
+          onRemove={index =>
             setFormData(prev => ({
               ...prev,
-              generateSections: prev.generateSections.filter((_, i) => i !== index)
+              generateSections: prev.generateSections.filter((_, i) => i !== index),
             }))
           }
         />
@@ -192,10 +190,10 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
           onChange={setIgnoreSection}
           onAdd={addIgnoreSection}
           tags={formData.ignoreSections}
-          onRemove={(index) => 
+          onRemove={index =>
             setFormData(prev => ({
               ...prev,
-              ignoreSections: prev.ignoreSections.filter((_, i) => i !== index)
+              ignoreSections: prev.ignoreSections.filter((_, i) => i !== index),
             }))
           }
         />
@@ -208,7 +206,9 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
             id="apiProvider"
             name="apiProvider"
             value={formData.apiProvider}
-            onChange={(e) => setFormData(prev => ({ ...prev, apiProvider: e.target.value as "openai" | "claude" }))}
+            onChange={e =>
+              setFormData(prev => ({ ...prev, apiProvider: e.target.value as 'openai' | 'claude' }))
+            }
             className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
             <option value="openai">OpenAI</option>
@@ -226,7 +226,7 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
               name="customPrompt"
               rows={3}
               value={formData.customPrompt}
-              onChange={(e) => setFormData(prev => ({ ...prev, customPrompt: e.target.value }))}
+              onChange={e => setFormData(prev => ({ ...prev, customPrompt: e.target.value }))}
               className="block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             />
           </div>
@@ -265,7 +265,8 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
                     </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-300">
-                        Are you sure you want to regenerate the blog content? This will replace your current content with new generated content.
+                        Are you sure you want to regenerate the blog content? This will replace your
+                        current content with new generated content.
                       </p>
                     </div>
                   </div>

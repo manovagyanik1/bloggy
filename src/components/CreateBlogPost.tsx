@@ -18,10 +18,7 @@ interface CreateBlogPostProps {
   projectSlug: string;
 }
 
-export function CreateBlogPost({ 
-  initial_blog, 
-  projectSlug 
-}: CreateBlogPostProps) {
+export function CreateBlogPost({ initial_blog, projectSlug }: CreateBlogPostProps) {
   const { project } = useProject(projectSlug);
   const location = useLocation();
   const editData = location.state?.blogData;
@@ -60,7 +57,7 @@ export function CreateBlogPost({
       setError(null);
       const content = await generateBlogHTML({
         ...values,
-        project
+        project,
       });
       editorInstance?.commands.setContent(content);
       setGeneratedContent(content);
@@ -78,13 +75,10 @@ export function CreateBlogPost({
 
   const handleGenerateMore = async () => {
     if (!editorInstance || !formData || !project) return;
-    
+
     try {
       setIsLoading(true);
-      const content = await generateMoreContent(
-        editorInstance.getHTML(),
-        { ...formData, project }
-      );
+      const content = await generateMoreContent(editorInstance.getHTML(), { ...formData, project });
       const newContent = editorInstance.getHTML() + content;
       editorInstance.commands.setContent(newContent);
       setGeneratedContent(newContent);
@@ -102,17 +96,17 @@ export function CreateBlogPost({
     additionalPrompt: string;
   }) => {
     if (!formData || !project) return '';
-    
+
     return regenerateSection({
       ...context,
       apiProvider: formData.apiProvider,
-      project
+      project,
     });
   };
 
   const handleFinalize = async () => {
     if (!editorInstance || !project) return;
-    
+
     try {
       setIsLoading(true);
       const metadata = await finalizeBlog(editorInstance.getHTML(), project);
@@ -126,13 +120,13 @@ export function CreateBlogPost({
 
   const handleDeploy = async () => {
     if (!editorInstance || !seoMetadata) return;
-    
+
     try {
       setIsDeploying(true);
       setDeployError(null);
-      
+
       const content = editorInstance.getHTML();
-      
+
       if (editData?.id) {
         await updateBlogPost(editData.id, content, seoMetadata, project!.id);
         alert('Blog post updated successfully!');
@@ -151,15 +145,13 @@ export function CreateBlogPost({
     <div className="min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-indigo-400 text-center mb-8">
-            AI Blog Generator
-          </h1>
-          
+          <h1 className="text-3xl font-bold text-indigo-400 text-center mb-8">AI Blog Generator</h1>
+
           <div className="bg-gray-800 shadow-xl shadow-indigo-500/10 sm:rounded-lg border border-gray-700">
             <div className="px-4 py-5 sm:p-6">
-              <BlogForm 
-                onSubmit={handleGenerate} 
-                isLoading={isLoading} 
+              <BlogForm
+                onSubmit={handleGenerate}
+                isLoading={isLoading}
                 hasContent={!!generatedContent}
               />
             </div>
@@ -180,7 +172,7 @@ export function CreateBlogPost({
 
           {generatedContent && !error && (
             <div className="mt-8">
-              <BlogContent 
+              <BlogContent
                 content={editedContent || generatedContent}
                 onGenerateMore={handleGenerateMore}
                 isLoading={isLoading}
@@ -191,10 +183,7 @@ export function CreateBlogPost({
               />
               {seoMetadata && (
                 <>
-                  <SEOMetadataForm
-                    metadata={seoMetadata}
-                    onChange={setSeoMetadata}
-                  />
+                  <SEOMetadataForm metadata={seoMetadata} onChange={setSeoMetadata} />
                   <div className="mt-6 flex justify-end">
                     <button
                       onClick={handleDeploy}
@@ -231,4 +220,4 @@ export function CreateBlogPost({
       </div>
     </div>
   );
-} 
+}

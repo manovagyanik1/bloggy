@@ -16,20 +16,14 @@ export function Footer() {
               <img src={bloggyLogo} alt="Bloggy Logo" className="w-6 h-6" />
               <h3 className="text-white font-bold">Bloggy</h3>
             </div>
-            <p className="text-sm text-gray-400">
-              Free AI-powered blog generator for everyone
-            </p>
+            <p className="text-sm text-gray-400">Free AI-powered blog generator for everyone</p>
           </div>
 
           <div>
             <h4 className="text-white font-bold mb-4">Product</h4>
             <ul className="space-y-2">
               <li>
-                <Link 
-                  to="/" 
-                  onClick={handleClick}
-                  className="text-gray-400 hover:text-gray-300"
-                >
+                <Link to="/" onClick={handleClick} className="text-gray-400 hover:text-gray-300">
                   Blog
                 </Link>
               </li>
@@ -40,8 +34,8 @@ export function Footer() {
             <h4 className="text-white font-bold mb-4">Company</h4>
             <ul className="space-y-2">
               <li>
-                <Link 
-                  to="/about" 
+                <Link
+                  to="/about"
                   onClick={handleClick}
                   className="text-gray-400 hover:text-gray-300"
                 >
@@ -49,8 +43,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/contact" 
+                <Link
+                  to="/contact"
                   onClick={handleClick}
                   className="text-gray-400 hover:text-gray-300"
                 >
@@ -64,8 +58,8 @@ export function Footer() {
             <h4 className="text-white font-bold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link 
-                  to="/privacy" 
+                <Link
+                  to="/privacy"
                   onClick={handleClick}
                   className="text-gray-400 hover:text-gray-300"
                 >
@@ -73,8 +67,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/terms" 
+                <Link
+                  to="/terms"
                   onClick={handleClick}
                   className="text-gray-400 hover:text-gray-300"
                 >
@@ -82,8 +76,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/cookies" 
+                <Link
+                  to="/cookies"
                   onClick={handleClick}
                   className="text-gray-400 hover:text-gray-300"
                 >
@@ -102,4 +96,4 @@ export function Footer() {
       </div>
     </footer>
   );
-} 
+}

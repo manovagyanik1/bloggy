@@ -3,9 +3,9 @@ import { BlogTheme } from '../types/theme';
 export const darkTheme: BlogTheme = {
   name: 'dark',
   colors: {
-    primary: '#3b82f6',    // blue-500
-    secondary: '#60a5fa',   // blue-400
-    background: '#111827',  // gray-900
+    primary: '#3b82f6', // blue-500
+    secondary: '#60a5fa', // blue-400
+    background: '#111827', // gray-900
     text: '#ffffff',
   },
   fonts: {
@@ -32,12 +32,12 @@ export const darkTheme: BlogTheme = {
       code: 'font-mono text-sm bg-gray-800/70 rounded px-2 py-1 text-gray-300',
       a: 'text-blue-400 hover:text-blue-300 underline decoration-2 underline-offset-2 transition-colors duration-200',
       img: 'max-w-full h-auto rounded-xl mb-8 shadow-lg',
-      hr: 'border-gray-700 my-12'
-    }
+      hr: 'border-gray-700 my-12',
+    },
   },
   layout: {
     container: 'w-full min-h-screen bg-gray-900',
     sectionSpacing: 'py-12 space-y-8',
-    imageSpacing: 'my-8 space-y-4'
-  }
+    imageSpacing: 'my-8 space-y-4',
+  },
 };

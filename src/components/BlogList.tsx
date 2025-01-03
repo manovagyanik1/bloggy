@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { getBlogsByProject } from '../lib/services/blog';
 import { getProjectBySlug } from '../lib/services/project';
@@ -10,19 +10,13 @@ import { Col, Empty, Row } from 'antd';
 import { BlogCard } from './BlogCard';
 
 export function BlogList() {
-  const { projectSlug } = useParams();
+  const { projectSlug } = useParams<{ projectSlug: string }>();
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (projectSlug) {
-      loadProjectAndBlogs();
-    }
-  }, [projectSlug]);
-
-  const loadProjectAndBlogs = async () => {
+  const loadProjectAndBlogs = useCallback(async () => {
     try {
       // First get project details
       const projectData = await getProjectBySlug(projectSlug!);
@@ -39,7 +33,13 @@ export function BlogList() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [projectSlug]);
+
+  useEffect(() => {
+    if (projectSlug) {
+      loadProjectAndBlogs();
+    }
+  }, [projectSlug, loadProjectAndBlogs]);
 
   const handleDelete = (blogId: string) => {
     setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId));
@@ -71,12 +71,8 @@ export function BlogList() {
   if (!blogs.length) {
     return (
       <div className="flex flex-col justify-center items-center min-h-[400px]">
-        <Empty 
-          description={
-            <span className="text-gray-400">
-              No blogs found for {project?.name}
-            </span>
-          }
+        <Empty
+          description={<span className="text-gray-400">No blogs found for {project?.name}</span>}
         />
         <div className="mt-6">
           <Link
@@ -92,19 +88,14 @@ export function BlogList() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8">
-        {project?.name} - Blog Posts
-      </h1>
+      <h1 className="text-2xl font-bold mb-8">{project?.name} - Blog Posts</h1>
       <Row gutter={[24, 24]}>
-        {blogs.map((blog) => (
+        {blogs.map(blog => (
           <Col xs={24} sm={12} md={8} lg={6} key={blog.id}>
-            <BlogCard 
-              blog={blog}
-              onDelete={handleDelete}
-            />
+            <BlogCard blog={blog} onDelete={handleDelete} />
           </Col>
         ))}
       </Row>
     </div>
   );
-} 
+}

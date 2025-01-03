@@ -20,7 +20,7 @@ interface BlogContentProps {
     succeeding: string;
     additionalPrompt: string;
   }) => Promise<string>;
-  onEditorReady?: (editor: any) => void;
+  onEditorReady?: (editor: unknown) => void;
   onFinalize?: () => Promise<void>;
   isGeneratingSEO?: boolean;
 }
@@ -33,7 +33,13 @@ interface RegenerateDialogProps {
   isRegenerating: boolean;
 }
 
-function RegenerateDialog({ isOpen, onClose, onRegenerate, selectedText, isRegenerating }: RegenerateDialogProps) {
+function RegenerateDialog({
+  isOpen,
+  onClose,
+  onRegenerate,
+  selectedText,
+  isRegenerating,
+}: RegenerateDialogProps) {
   const [additionalPrompt, setAdditionalPrompt] = useState('');
   const theme = getTheme();
 
@@ -43,13 +49,16 @@ function RegenerateDialog({ isOpen, onClose, onRegenerate, selectedText, isRegen
     <div className="fixed inset-0 bg-gray-900/75 transition-opacity">
       <div className="fixed inset-0 z-10 overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div 
+          <div
             className="relative transform overflow-hidden rounded-lg px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 border border-gray-700"
             style={{ backgroundColor: theme.colors.background }}
           >
             <div className="sm:flex sm:items-start">
               <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                <h3 className="text-base font-semibold leading-6" style={{ color: theme.colors.text }}>
+                <h3
+                  className="text-base font-semibold leading-6"
+                  style={{ color: theme.colors.text }}
+                >
                   Regenerate Content
                 </h3>
                 <div className="mt-2">
@@ -57,11 +66,13 @@ function RegenerateDialog({ isOpen, onClose, onRegenerate, selectedText, isRegen
                     Selected text to regenerate:
                   </p>
                   <div className="bg-gray-800 p-3 rounded-md mb-4">
-                    <p className="text-sm" style={{ color: theme.colors.text }}>{selectedText}</p>
+                    <p className="text-sm" style={{ color: theme.colors.text }}>
+                      {selectedText}
+                    </p>
                   </div>
                   <textarea
                     value={additionalPrompt}
-                    onChange={(e) => setAdditionalPrompt(e.target.value)}
+                    onChange={e => setAdditionalPrompt(e.target.value)}
                     placeholder="Add any specific instructions for regeneration (optional)"
                     className="w-full rounded-md border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     style={{ backgroundColor: theme.colors.background, color: theme.colors.text }}
@@ -111,7 +122,7 @@ interface FloatingButtonProps {
 
 function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
   const theme = getTheme();
-  
+
   if (!position) return null;
 
   return (
@@ -124,15 +135,15 @@ function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
       }}
     >
       <button
-        onClick={(e) => {
+        onClick={e => {
           e.preventDefault();
           e.stopPropagation();
           onRegenerate();
         }}
         className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
-        style={{ 
+        style={{
           backgroundColor: theme.colors.primary,
-          color: theme.colors.background 
+          color: theme.colors.background,
         }}
       >
         <RefreshCw className="h-4 w-4 mr-1" />
@@ -142,12 +153,12 @@ function FloatingButton({ onRegenerate, position }: FloatingButtonProps) {
   );
 }
 
-export function BlogContent({ 
-  content, 
-  onGenerateMore, 
-  isLoading, 
-  onContentChange, 
-  onRegenerateSection, 
+export function BlogContent({
+  content,
+  onGenerateMore,
+  isLoading,
+  onContentChange,
+  onRegenerateSection,
   onEditorReady,
   onFinalize,
 }: BlogContentProps) {
@@ -158,7 +169,7 @@ export function BlogContent({
   }>({
     isOpen: false,
     description: '',
-    element: null
+    element: null,
   });
   const [buttonPosition, setButtonPosition] = useState<{ x: number; y: number } | null>(null);
   const [regenerateDialog, setRegenerateDialog] = useState<{
@@ -190,7 +201,7 @@ export function BlogContent({
       Typography,
       Placeholder.configure({
         placeholder: 'Start editing...',
-      })
+      }),
     ],
     content: content || '<p></p>',
     onUpdate: ({ editor }) => {
@@ -198,7 +209,7 @@ export function BlogContent({
     },
     onCreate: ({ editor }) => {
       onEditorReady?.(editor);
-    }
+    },
   });
 
   const handleImageClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -208,7 +219,7 @@ export function BlogContent({
       setImageDialog({
         isOpen: true,
         description: img.getAttribute('bloggy-description') || '',
-        element: img
+        element: img,
       });
     }
   };
@@ -216,12 +227,14 @@ export function BlogContent({
   const handleImageUpload = (file: File) => {
     if (imageDialog.element) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         if (e.target?.result && editor) {
-          editor.chain().focus()
-            .setImage({ 
+          editor
+            .chain()
+            .focus()
+            .setImage({
               src: e.target.result as string,
-              alt: imageDialog.description 
+              alt: imageDialog.description,
             })
             .run();
         }
@@ -256,61 +269,64 @@ export function BlogContent({
 
       setButtonPosition({
         x: x + 10,
-        y: y
+        y: y,
       });
 
       setRegenerateDialog(prev => ({
         ...prev,
         selectedText,
-        range
+        range,
       }));
     }
   }, [editor]);
 
-  const handleRegenerate = useCallback(async (additionalPrompt: string) => {
-    if (regenerateDialog.range && editor && onRegenerateSection) {
-      try {
-        setRegenerationState({ isLoading: true, error: null });
-        
-        const range = regenerateDialog.range;
-        
-        // Get the parent nodes for context
-        const startNode = range.startContainer.parentNode;
-        const endNode = range.endContainer.parentNode;
-        
-        // Get preceding and succeeding content from the same level
-        const context = {
-          preceding: startNode?.previousSibling?.textContent || '',
-          selected: regenerateDialog.selectedText,
-          succeeding: endNode?.nextSibling?.textContent || '',
-          additionalPrompt
-        };
+  const handleRegenerate = useCallback(
+    async (additionalPrompt: string) => {
+      if (regenerateDialog.range && editor && onRegenerateSection) {
+        try {
+          setRegenerationState({ isLoading: true, error: null });
 
-        const newContent = await onRegenerateSection(context);
+          const range = regenerateDialog.range;
 
-        // Store current selection state
-        const from = editor.state.selection.from;
-        const to = editor.state.selection.to;
+          // Get the parent nodes for context
+          const startNode = range.startContainer.parentNode;
+          const endNode = range.endContainer.parentNode;
 
-        // Replace content at the current selection
-        editor
-          .chain()
-          .focus()
-          .deleteRange({ from, to }) // First delete the selected content
-          .insertContent(newContent) // Then insert the new content
-          .run();
+          // Get preceding and succeeding content from the same level
+          const context = {
+            preceding: startNode?.previousSibling?.textContent || '',
+            selected: regenerateDialog.selectedText,
+            succeeding: endNode?.nextSibling?.textContent || '',
+            additionalPrompt,
+          };
 
-        setRegenerationState({ isLoading: false, error: null });
-        setButtonPosition(null);
-        setRegenerateDialog(prev => ({ ...prev, isOpen: false }));
-      } catch (error) {
-        setRegenerationState({ 
-          isLoading: false, 
-          error: error instanceof Error ? error.message : 'Failed to regenerate content'
-        });
+          const newContent = await onRegenerateSection(context);
+
+          // Store current selection state
+          const from = editor.state.selection.from;
+          const to = editor.state.selection.to;
+
+          // Replace content at the current selection
+          editor
+            .chain()
+            .focus()
+            .deleteRange({ from, to }) // First delete the selected content
+            .insertContent(newContent) // Then insert the new content
+            .run();
+
+          setRegenerationState({ isLoading: false, error: null });
+          setButtonPosition(null);
+          setRegenerateDialog(prev => ({ ...prev, isOpen: false }));
+        } catch (error) {
+          setRegenerationState({
+            isLoading: false,
+            error: error instanceof Error ? error.message : 'Failed to regenerate content',
+          });
+        }
       }
-    }
-  }, [regenerateDialog.range, editor, regenerateDialog.selectedText, onRegenerateSection]);
+    },
+    [regenerateDialog.range, editor, regenerateDialog.selectedText, onRegenerateSection]
+  );
 
   useEffect(() => {
     if (regenerationState.error) {
@@ -332,21 +348,29 @@ export function BlogContent({
 
   return (
     <div className="mt-8">
-      <div className="shadow-xl rounded-lg relative border border-gray-700" 
-           style={{ backgroundColor: theme.colors.background }}>
+      <div
+        className="shadow-xl rounded-lg relative border border-gray-700"
+        style={{ backgroundColor: theme.colors.background }}
+      >
         <div className="px-4 py-5 sm:p-6">
-          <h2 className={`text-lg font-medium mb-4 ${theme.fonts.heading}`} 
-              style={{ color: theme.colors.text }}>
+          <h2
+            className={`text-lg font-medium mb-4 ${theme.fonts.heading}`}
+            style={{ color: theme.colors.text }}
+          >
             Generated Blog Content
           </h2>
           <div className="relative">
-            <div onClick={handleImageClick} 
-                 className="prose prose-invert max-w-none"
-                 style={{ backgroundColor: theme.colors.background }}>
+            <div
+              onClick={handleImageClick}
+              className="prose prose-invert max-w-none"
+              style={{ backgroundColor: theme.colors.background }}
+            >
               {editor && (
                 <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-                  <div className="flex gap-1 p-1 rounded-lg shadow-lg border border-gray-700"
-                       style={{ backgroundColor: theme.colors.background }}>
+                  <div
+                    className="flex gap-1 p-1 rounded-lg shadow-lg border border-gray-700"
+                    style={{ backgroundColor: theme.colors.background }}
+                  >
                     <button
                       onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                       className={`p-1 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-indigo-600' : 'hover:bg-gray-700'}`}
@@ -456,12 +480,7 @@ export function BlogContent({
         onImageUpload={handleImageUpload}
       />
 
-      {seoMetadata && (
-        <SEOMetadataForm
-          metadata={seoMetadata}
-          onChange={setSeoMetadata}
-        />
-      )}
+      {seoMetadata && <SEOMetadataForm metadata={seoMetadata} onChange={setSeoMetadata} />}
     </div>
   );
 }

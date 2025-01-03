@@ -85,27 +85,30 @@ export function CreateProjectPage({ mode = 'create' }: CreateProjectPageProps) {
             {mode === 'edit' ? 'Edit Project' : 'Create New Project'}
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            {mode === 'edit' 
+            {mode === 'edit'
               ? 'Update your project settings'
-              : 'Set up a new blog project with custom settings'
-            }
+              : 'Set up a new blog project with custom settings'}
           </p>
         </div>
 
         <div className="mt-8">
-          <ProjectForm 
+          <ProjectForm
             onSubmit={handleSubmit}
             isLoading={isLoading}
-            initialValues={project ? {
-              name: project.name,
-              slug: project.slug,
-              url: project.url,
-              theme: project.theme,
-              description: project.description
-            } : undefined}
+            initialValues={
+              project
+                ? {
+                    name: project.name,
+                    slug: project.slug,
+                    url: project.url,
+                    theme: project.theme,
+                    description: project.description,
+                  }
+                : undefined
+            }
           />
         </div>
       </div>
     </div>
   );
-} 
+}

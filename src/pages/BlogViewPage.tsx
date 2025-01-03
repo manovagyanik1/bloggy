@@ -8,7 +8,7 @@ import { API_ROUTES } from '../lib/util/constants';
 import { message } from 'antd';
 
 export function BlogViewPage() {
-  const { id, projectSlug } = useParams<{ id: string, projectSlug: string }>();
+  const { id, projectSlug } = useParams<{ id: string; projectSlug: string }>();
   const navigate = useNavigate();
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [project, setProject] = useState<Project | null>(null);
@@ -24,7 +24,7 @@ export function BlogViewPage() {
   const loadProjectAndBlog = async () => {
     try {
       setIsLoading(true);
-      
+
       // Load project first
       const projectData = await getProjectBySlug(projectSlug!);
       setProject(projectData);
@@ -35,6 +35,7 @@ export function BlogViewPage() {
       const blogData = await response.json();
       setBlog(blogData);
     } catch (error) {
+      setError(error instanceof Error ? error.message : 'An error occurred');
       console.error('Error loading:', error);
       message.error('Failed to load content');
       navigate(`/projects/${projectSlug}/blogs`);
@@ -49,12 +50,7 @@ export function BlogViewPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <BlogView 
-        blog={blog} 
-        project={project}
-        isLoading={isLoading}
-        error={error}
-      />
+      <BlogView blog={blog} project={project} isLoading={isLoading} error={error} />
     </div>
   );
-} 
+}

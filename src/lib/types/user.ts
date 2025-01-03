@@ -17,4 +17,4 @@ export interface UpdateUserProfileInput {
   website?: string;
   company?: string;
   location?: string;
-} 
+}

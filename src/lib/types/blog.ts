@@ -13,4 +13,4 @@ export interface BlogPost {
     id: string;
     user_id: string;
   };
-} 
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { CreateProjectInput } from '../lib/types/project';
 import { darkTheme } from '../lib/themes/darkTheme';
@@ -16,15 +16,32 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
   const [form] = Form.useForm();
   const [selectedTheme, setSelectedTheme] = useState('dark');
 
-  const validateThemeJson = (_: any, value: string) => {
+  const validateThemeJson = (_: unknown, value: string) => {
     try {
       const theme = JSON.parse(value);
       const requiredKeys = ['name', 'colors', 'fonts', 'layout'];
       const requiredColors = ['primary', 'secondary', 'background', 'text'];
       const requiredFonts = ['heading', 'subheading', 'body', 'caption', 'elements'];
       const requiredElements = [
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ul', 'ol', 'li',
-        'blockquote', 'table', 'th', 'td', 'pre', 'code', 'a', 'img', 'hr'
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'p',
+        'ul',
+        'ol',
+        'li',
+        'blockquote',
+        'table',
+        'th',
+        'td',
+        'pre',
+        'code',
+        'a',
+        'img',
+        'hr',
       ];
       const requiredLayout = ['container', 'sectionSpacing', 'imageSpacing'];
 
@@ -35,7 +52,9 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
         return Promise.reject('Colors must include: primary, secondary, background, and text');
       }
       if (!requiredFonts.every(key => key in theme.fonts)) {
-        return Promise.reject('Fonts must include: heading, subheading, body, caption, and elements');
+        return Promise.reject(
+          'Fonts must include: heading, subheading, body, caption, and elements'
+        );
       }
       if (!requiredElements.every(key => key in theme.fonts.elements)) {
         return Promise.reject('Font elements must include all HTML element styles');
@@ -45,15 +64,16 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
       }
 
       return Promise.resolve();
-    } catch (e) {
+    } catch (e: unknown) {
+      console.error(e);
       return Promise.reject('Invalid JSON format');
     }
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: CreateProjectInput) => {
     const projectData = {
       ...values,
-      theme: JSON.parse(values.theme)
+      theme: values.theme,
     };
     onSubmit(projectData);
   };
@@ -74,7 +94,9 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
       onFinish={handleSubmit}
       initialValues={{
         ...initialValues,
-        theme: initialValues?.theme ? JSON.stringify(initialValues.theme, null, 2) : JSON.stringify(darkTheme, null, 2)
+        theme: initialValues?.theme
+          ? JSON.stringify(initialValues.theme, null, 2)
+          : JSON.stringify(darkTheme, null, 2),
       }}
       className="max-w-2xl mx-auto"
     >
@@ -83,7 +105,7 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
         name="name"
         rules={[
           { required: true, message: 'Please enter a project name' },
-          { min: 3, message: 'Name must be at least 3 characters' }
+          { min: 3, message: 'Name must be at least 3 characters' },
         ]}
       >
         <Input placeholder="My Awesome Project" />
@@ -94,7 +116,10 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
         name="slug"
         rules={[
           { required: true, message: 'Please enter a URL slug' },
-          { pattern: /^[a-z0-9-]+$/, message: 'Slug can only contain lowercase letters, numbers, and hyphens' }
+          {
+            pattern: /^[a-z0-9-]+$/,
+            message: 'Slug can only contain lowercase letters, numbers, and hyphens',
+          },
         ]}
         help="This will be used in your project's URL (e.g., myproject)"
       >
@@ -106,7 +131,7 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
         name="url"
         rules={[
           { required: true, message: 'Please enter your project URL' },
-          { type: 'url', message: 'Please enter a valid URL' }
+          { type: 'url', message: 'Please enter a valid URL' },
         ]}
         help="The full URL where your blog will be hosted (e.g., https://myblog.com/blog)"
       >
@@ -118,7 +143,7 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
         name="description"
         help="This description will be used to train the AI about your website's context. Be specific about your website's purpose, features, and target audience."
       >
-        <Input.TextArea 
+        <Input.TextArea
           placeholder="Describe your project in detail. For example: 'My website is a professional photography portfolio showcasing landscape and portrait photography. It features galleries organized by theme, client testimonials, booking system for photo sessions, and a blog section sharing photography tips and behind-the-scenes content. The target audience includes potential clients, art directors, and photography enthusiasts.'"
           rows={4}
         />
@@ -126,11 +151,7 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
 
       <div className="mb-4">
         <label className="block mb-2">Theme Type</label>
-        <Select 
-          value={selectedTheme}
-          onChange={handleThemeChange}
-          className="w-full"
-        >
+        <Select value={selectedTheme} onChange={handleThemeChange} className="w-full">
           <Option value="dark">Dark Theme</Option>
           <Option value="light">Light Theme</Option>
           <Option value="custom">Custom Theme</Option>
@@ -142,26 +163,18 @@ export function ProjectForm({ onSubmit, initialValues, isLoading = false }: Proj
         name="theme"
         rules={[
           { required: true, message: 'Please enter theme configuration' },
-          { validator: validateThemeJson }
+          { validator: validateThemeJson },
         ]}
         help="Customize the theme configuration in JSON format"
       >
-        <Input.TextArea 
-          rows={10}
-          placeholder={JSON.stringify(darkTheme, null, 2)}
-        />
+        <Input.TextArea rows={10} placeholder={JSON.stringify(darkTheme, null, 2)} />
       </Form.Item>
 
       <Form.Item>
-        <Button 
-          type="primary" 
-          htmlType="submit"
-          loading={isLoading}
-          className="w-full"
-        >
+        <Button type="primary" htmlType="submit" loading={isLoading} className="w-full">
           {initialValues ? 'Update Project' : 'Create Project'}
         </Button>
       </Form.Item>
     </Form>
   );
-} 
+}

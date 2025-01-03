@@ -18,7 +18,7 @@ export function AuthCallback() {
       return;
     }
 
-    supabase.auth.onAuthStateChange((event, session) => {
+    supabase.auth.onAuthStateChange(event => {
       if (event === 'SIGNED_IN') {
         navigate('/', { replace: true });
       }
@@ -30,4 +30,4 @@ export function AuthCallback() {
       <div className="text-white">Completing sign in...</div>
     </div>
   );
-} 
+}

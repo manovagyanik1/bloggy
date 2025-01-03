@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEffect, useState } from 'react';
 import { ProjectList } from '../components/ProjectList';
 import { Project } from '../lib/types/project';
@@ -18,8 +17,8 @@ export function ProjectsPage() {
       setIsLoading(true);
       const data = await getProjects();
       setProjects(data);
-    } catch (err: any) {
-      message.error(err.message || 'Failed to load projects');
+    } catch (err: unknown) {
+      message.error(err instanceof Error ? err.message : 'Failed to load projects');
     } finally {
       setIsLoading(false);
     }
@@ -30,18 +29,14 @@ export function ProjectsPage() {
       await deleteProject(id);
       message.success('Project deleted successfully');
       loadProjects(); // Reload the list
-    } catch (err: any) {
-      message.error(err.message || 'Failed to delete project');
+    } catch (err: unknown) {
+      message.error(err instanceof Error ? err.message : 'Failed to delete project');
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ProjectList 
-        projects={projects}
-        onDelete={handleDelete}
-        isLoading={isLoading}
-      />
+      <ProjectList projects={projects} onDelete={handleDelete} isLoading={isLoading} />
     </div>
   );
-} 
+}

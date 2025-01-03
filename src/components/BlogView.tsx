@@ -13,13 +13,13 @@ import { BlogPost } from '../lib/types/blog';
 import { Project } from '../lib/types/project';
 import { Spin, Alert, message } from 'antd';
 import { formatDate } from '../lib/util/date';
-import { Level } from '@tiptap/extension-heading'
-import { 
-  TwitterOutlined, 
-  LinkedinOutlined, 
-  FacebookOutlined, 
+import { Level } from '@tiptap/extension-heading';
+import {
+  TwitterOutlined,
+  LinkedinOutlined,
+  FacebookOutlined,
   WhatsAppOutlined,
-  CopyOutlined
+  CopyOutlined,
 } from '@ant-design/icons';
 
 interface BlogViewProps {
@@ -43,7 +43,7 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
       Heading.extend({
         levels: [1, 2, 3, 4, 5, 6],
         renderHTML({ node, HTMLAttributes }) {
-          const level = node.attrs.level as Level
+          const level = node.attrs.level as Level;
           const classes = {
             1: project.theme.fonts.elements.h1,
             2: project.theme.fonts.elements.h2,
@@ -51,39 +51,39 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
             4: project.theme.fonts.elements.h4,
             5: project.theme.fonts.elements.h5,
             6: project.theme.fonts.elements.h6,
-          }
-          return [`h${level}`, { ...HTMLAttributes, class: classes[level] }, 0]
-        }
-      }),      
+          };
+          return [`h${level}`, { ...HTMLAttributes, class: classes[level] }, 0];
+        },
+      }),
       Paragraph.configure({
         HTMLAttributes: {
-          class: project.theme.fonts.elements.p
-        }
+          class: project.theme.fonts.elements.p,
+        },
       }),
       BulletList.configure({
         HTMLAttributes: {
-          class: project.theme.fonts.elements.ul
-        }
+          class: project.theme.fonts.elements.ul,
+        },
       }),
       OrderedList.configure({
         HTMLAttributes: {
-          class: project.theme.fonts.elements.ol
-        }
+          class: project.theme.fonts.elements.ol,
+        },
       }),
       ListItem.configure({
         HTMLAttributes: {
-          class: project.theme.fonts.elements.li
-        }
+          class: project.theme.fonts.elements.li,
+        },
       }),
       Blockquote.configure({
         HTMLAttributes: {
-          class: project.theme.fonts.elements.blockquote
-        }
+          class: project.theme.fonts.elements.blockquote,
+        },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: project.theme.fonts.elements.img
-        }
+          class: project.theme.fonts.elements.img,
+        },
       }),
       Typography,
     ],
@@ -93,7 +93,7 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
       attributes: {
         class: project.theme.fonts.body,
       },
-    }
+    },
   });
 
   if (error) {
@@ -116,20 +116,17 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
   const shareUrl = `${project.url}/${blog.slug}`;
 
   return (
-    <article 
+    <article
       className={project.theme.layout.container}
       style={{ backgroundColor: project.theme.colors.background }}
     >
       <div className="max-w-4xl mx-auto px-6 sm:px-8 py-12">
         <header className={project.theme.layout.sectionSpacing}>
-          <h1 
-            className={project.theme.fonts.heading}
-            style={{ color: project.theme.colors.text }}
-          >
+          <h1 className={project.theme.fonts.heading} style={{ color: project.theme.colors.text }}>
             {seo_metadata.seo_title}
           </h1>
-          
-          <div 
+
+          <div
             className={project.theme.fonts.caption}
             style={{ color: project.theme.colors.secondary }}
           >
@@ -137,7 +134,7 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
           </div>
 
           {seo_metadata.meta_description && (
-            <p 
+            <p
               className={project.theme.fonts.subheading}
               style={{ color: project.theme.colors.text }}
             >
@@ -148,10 +145,10 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
           {seo_metadata.keywords?.length > 0 && (
             <div className="flex flex-wrap gap-3 mt-6">
               {seo_metadata.keywords.map((keyword, index) => (
-                <span 
+                <span
                   key={index}
                   className="px-3 py-1.5 rounded-full text-sm font-medium inline-block"
-                  style={{ 
+                  style={{
                     color: project.theme.colors.text,
                     backgroundColor: `${project.theme.colors.primary}30`,
                     border: `1px solid ${project.theme.colors.primary}`,
@@ -164,67 +161,72 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
           )}
         </header>
 
-        <div 
-          className={project.theme.fonts.body}
-          style={{ color: project.theme.colors.text }}
-        >
+        <div className={project.theme.fonts.body} style={{ color: project.theme.colors.text }}>
           <EditorContent editor={editor} />
         </div>
 
-        <footer 
+        <footer
           className={project.theme.layout.sectionSpacing}
           style={{ borderTopColor: project.theme.colors.secondary }}
         >
           <div className="flex justify-between items-center">
             <div>
-              <h2 
+              <h2
                 className={project.theme.fonts.subheading}
                 style={{ color: project.theme.colors.text }}
               >
                 Share this post
               </h2>
               <div className="flex items-center gap-6 mt-4">
-                <button 
-                  onClick={() => window.open(
-                    `https://twitter.com/intent/tweet?text=${encodeURIComponent(seo_metadata.seo_title)}&url=${encodeURIComponent(shareUrl)}`,
-                    '_blank'
-                  )}
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://twitter.com/intent/tweet?text=${encodeURIComponent(seo_metadata.seo_title)}&url=${encodeURIComponent(shareUrl)}`,
+                      '_blank'
+                    )
+                  }
                   className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
                   style={{ backgroundColor: project.theme.colors.primary }}
                 >
                   <TwitterOutlined className="text-xl" style={{ color: '#fff' }} />
                 </button>
-                <button 
-                  onClick={() => window.open(
-                    `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
-                    '_blank'
-                  )}
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+                      '_blank'
+                    )
+                  }
                   className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
                   style={{ backgroundColor: project.theme.colors.primary }}
                 >
                   <LinkedinOutlined className="text-xl" style={{ color: '#fff' }} />
                 </button>
-                <button 
-                  onClick={() => window.open(
-                    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
-                    '_blank'
-                  )}
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+                      '_blank'
+                    )
+                  }
                   className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
                   style={{ backgroundColor: project.theme.colors.primary }}
                 >
                   <FacebookOutlined className="text-xl" style={{ color: '#fff' }} />
                 </button>
-                <button 
-                  onClick={() => window.open(
-                    `https://wa.me/?text=${encodeURIComponent(`${seo_metadata.seo_title} ${shareUrl}`)}`,
-                    '_blank'
-                  )}
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://wa.me/?text=${encodeURIComponent(`${seo_metadata.seo_title} ${shareUrl}`)}`,
+                      '_blank'
+                    )
+                  }
                   className="flex items-center justify-center w-10 h-10 rounded-full transition-transform hover:scale-110"
                   style={{ backgroundColor: project.theme.colors.primary }}
                 >
                   <WhatsAppOutlined className="text-xl" style={{ color: '#fff' }} />
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(shareUrl);
                     message.success('Link copied to clipboard!');
@@ -236,8 +238,8 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
                 </button>
               </div>
             </div>
-            
-            <div 
+
+            <div
               className={project.theme.fonts.caption}
               style={{ color: project.theme.colors.secondary }}
             >
@@ -248,4 +250,4 @@ export function BlogView({ blog, project, isLoading = false, error = null }: Blo
       </div>
     </article>
   );
-} 
+}

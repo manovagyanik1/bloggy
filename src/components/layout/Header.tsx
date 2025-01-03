@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { signInWithGoogle, signOut } from '../../lib/auth/supabase';
-import { Button, Drawer, Spin, Menu } from 'antd';
+import { Button, Drawer, Spin } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 import bloggyLogo from '/assets/bloggy-logo.svg';
 
@@ -11,8 +11,8 @@ export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Update regex to exclude 'new' path
-  const projectMatch = location.pathname.match(/^\/projects\/(?!new\b)([^\/]+)/);
+  // Fixed regex to avoid useless escaping
+  const projectMatch = location.pathname.match(/^\/projects\/(?!new\b)([^/]+)/);
   const currentProject = projectMatch ? projectMatch[1] : null;
 
   const getMenuItems = () => {
@@ -50,22 +50,21 @@ export function Header() {
 
   const renderMenuItems = () => (
     <>
-      {user && menuItems.map(item => (
-        <Link
-          key={item.key}
-          to={item.key}
-          className={`text-sm font-medium transition-colors ${
-            location.pathname === item.key
-              ? 'text-white'
-              : 'text-gray-300 hover:text-white'
-          }`}
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          {item.label}
-        </Link>
-      ))}
+      {user &&
+        menuItems.map(item => (
+          <Link
+            key={item.key}
+            to={item.key}
+            className={`text-sm font-medium transition-colors ${
+              location.pathname === item.key ? 'text-white' : 'text-gray-300 hover:text-white'
+            }`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {item.label}
+          </Link>
+        ))}
       {user && (
-        <Link 
+        <Link
           to="/profile"
           className="text-gray-300 hover:text-white"
           onClick={() => setMobileMenuOpen(false)}
@@ -78,13 +77,11 @@ export function Header() {
 
   const renderAuthButton = () => {
     if (isLoading) return <Spin size="small" />;
-    
+
     if (user) {
       return (
         <div className="flex items-center gap-4">
-          <span className="text-gray-300 hidden md:inline">
-            {user.email}
-          </span>
+          <span className="text-gray-300 hidden md:inline">{user.email}</span>
           <Button
             onClick={handleLogout}
             type="primary"
@@ -97,11 +94,7 @@ export function Header() {
     }
 
     return (
-      <Button
-        onClick={handleLogin}
-        type="primary"
-        className="bg-indigo-600 hover:bg-indigo-700"
-      >
+      <Button onClick={handleLogin} type="primary" className="bg-indigo-600 hover:bg-indigo-700">
         Sign In with Google
       </Button>
     );
@@ -117,14 +110,10 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {renderMenuItems()}
-          </div>
+          <div className="hidden md:flex items-center space-x-8">{renderMenuItems()}</div>
 
           {/* Desktop Auth Button */}
-          <div className="hidden md:block">
-            {renderAuthButton()}
-          </div>
+          <div className="hidden md:block">{renderAuthButton()}</div>
 
           {/* Mobile Menu Button */}
           <Button
@@ -160,19 +149,11 @@ export function Header() {
         }}
       >
         <div className="flex flex-col space-y-4 p-4">
-          {user && (
-            <div className="text-gray-300 pb-4 border-b border-gray-700">
-              {user.email}
-            </div>
-          )}
-          <div className="flex flex-col space-y-4">
-            {renderMenuItems()}
-          </div>
-          <div className="pt-4 border-t border-gray-700">
-            {renderAuthButton()}
-          </div>
+          {user && <div className="text-gray-300 pb-4 border-b border-gray-700">{user.email}</div>}
+          <div className="flex flex-col space-y-4">{renderMenuItems()}</div>
+          <div className="pt-4 border-t border-gray-700">{renderAuthButton()}</div>
         </div>
       </Drawer>
     </header>
   );
-} 
+}

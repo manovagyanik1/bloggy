@@ -18,4 +18,4 @@ export interface CreateProjectInput {
   url: string;
   theme?: BlogTheme;
   description?: string;
-} 
+}
