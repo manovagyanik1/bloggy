@@ -1,4 +1,4 @@
-interface OpenAIRequestBody {
+export interface AIRequestBody {
   model: string;
   messages: {
     role: string;
@@ -8,7 +8,7 @@ interface OpenAIRequestBody {
   max_tokens: number;
 }
 
-interface OpenAIResponse {
+export interface AIResponse {
   choices: {
     message: {
       content: string;
@@ -16,16 +16,33 @@ interface OpenAIResponse {
   }[];
 }
 
-export async function callOpenAI(prompt: string): Promise<string> {
-  const url = 'https://api.openai.com/v1/chat/completions';
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+export type AIProvider = 'openai' | 'deepseek' | 'claude';
+
+export async function callAI(prompt: string, provider: AIProvider = 'deepseek'): Promise<string> {
+  const apiKey = {
+    openai: import.meta.env.VITE_OPENAI_API_KEY,
+    deepseek: import.meta.env.VITE_DEEPSEEK_API_KEY,
+    claude: import.meta.env.VITE_CLAUDE_API_KEY,
+  }[provider];
 
   if (!apiKey) {
-    throw new Error('OpenAI API key not found');
+    throw new Error(`${provider} API key not found`);
   }
 
-  const requestBody: OpenAIRequestBody = {
-    model: 'gpt-3.5-turbo',
+  const endpoints = {
+    openai: 'https://api.openai.com/v1/chat/completions',
+    deepseek: 'https://api.deepseek.com/chat/completions',
+    claude: 'https://api.anthropic.com/v1/messages',
+  };
+
+  const models = {
+    openai: 'gpt-3.5-turbo',
+    deepseek: 'deepseek-chat',
+    claude: 'claude-3-opus-20240229',
+  };
+
+  const requestBody: AIRequestBody = {
+    model: models[provider],
     messages: [
       {
         role: 'system',
@@ -40,19 +57,21 @@ export async function callOpenAI(prompt: string): Promise<string> {
     max_tokens: 4096,
   };
 
-  const response = await fetch(url, {
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: provider === 'claude' ? `Bearer ${apiKey}` : `Bearer ${apiKey}`,
+  };
+
+  const response = await fetch(endpoints[provider], {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
+    headers,
     body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API request failed: ${response.statusText}`);
+    throw new Error(`${provider} API request failed: ${response.statusText}`);
   }
 
-  const result: OpenAIResponse = await response.json();
+  const result: AIResponse = await response.json();
   return result.choices[0].message.content;
 }

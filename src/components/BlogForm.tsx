@@ -12,7 +12,7 @@ export interface BlogFormData {
   seoKeywords: string[];
   ignoreSections: string[];
   generateSections: string[];
-  apiProvider: 'openai' | 'claude';
+  apiProvider: 'openai' | 'deepseek' | 'claude';
   customPrompt: string;
   themeName: string;
 }
@@ -79,11 +79,11 @@ function TagInput({ label, value, onChange, onAdd, placeholder, tags, onRemove }
 
 export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
   const [formData, setFormData] = useState<BlogFormData>({
-    title: 'What makes clipy so powerful',
+    title: '',
     seoKeywords: [],
     ignoreSections: [],
     generateSections: [],
-    apiProvider: 'openai',
+    apiProvider: 'deepseek',
     customPrompt: '',
     themeName: 'modern',
   });
@@ -207,10 +207,14 @@ export function BlogForm({ onSubmit, isLoading, hasContent }: BlogFormProps) {
             name="apiProvider"
             value={formData.apiProvider}
             onChange={e =>
-              setFormData(prev => ({ ...prev, apiProvider: e.target.value as 'openai' | 'claude' }))
+              setFormData(prev => ({
+                ...prev,
+                apiProvider: e.target.value as 'openai' | 'deepseek' | 'claude',
+              }))
             }
             className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
+            <option value="deepseek">DeepSeek</option>
             <option value="openai">OpenAI</option>
             <option value="claude">Claude</option>
           </select>

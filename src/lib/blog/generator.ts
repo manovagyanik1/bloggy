@@ -1,7 +1,6 @@
 import { BlogTheme } from '../types/theme';
 import { getTheme } from '../themes';
-import { callOpenAI } from '../api/openai';
-import { callClaude } from '../api/claude';
+import { callAI, AIProvider } from '../api/openai';
 import {
   createInitialPrompt,
   createContinuationPrompt,
@@ -15,7 +14,7 @@ export interface GenerateBlogParams {
   seoKeywords: string[];
   ignoreSections: string[];
   generateSections: string[];
-  apiProvider: 'openai' | 'claude';
+  apiProvider: AIProvider;
   customPrompt?: string;
   themeName?: string;
   project: Project;
@@ -29,7 +28,7 @@ export async function generateBlogHTML(params: GenerateBlogParams): Promise<stri
     project: params.project,
   });
 
-  const content = await (params.apiProvider === 'openai' ? callOpenAI(prompt) : callClaude(prompt));
+  const content = await callAI(prompt, params.apiProvider);
 
   return wrapContent(content, theme);
 }
@@ -46,7 +45,7 @@ export async function generateMoreContent(
     project: params.project,
   });
 
-  const content = await (params.apiProvider === 'openai' ? callOpenAI(prompt) : callClaude(prompt));
+  const content = await callAI(prompt, params.apiProvider);
 
   return content;
 }
@@ -54,7 +53,7 @@ export async function generateMoreContent(
 export async function finalizeBlog(content: string, project: Project): Promise<unknown> {
   const prompt = createFinalizePrompt(content, project);
 
-  const result = await callOpenAI(prompt);
+  const result = await callAI(prompt, 'deepseek');
   try {
     // Clean up the response to extract just the JSON part
     const jsonStr = result
@@ -94,7 +93,7 @@ interface RegenerateSectionParams extends Pick<GenerateBlogParams, 'apiProvider'
 export async function regenerateSection(params: RegenerateSectionParams): Promise<string> {
   const prompt = createRegenerationPrompt(params);
 
-  const content = await (params.apiProvider === 'openai' ? callOpenAI(prompt) : callClaude(prompt));
+  const content = await callAI(prompt, params.apiProvider);
 
   return content;
 }
